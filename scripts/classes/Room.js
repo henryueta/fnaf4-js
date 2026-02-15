@@ -8,7 +8,7 @@ class Room {
         this.room_image = new Image();
         this.room_image.src = config.room_image;
         this.vision = "internal";
-        this.playerIsDeath = false;
+        this.killer_animatronic = null;
         // this.current_door_vision = null;
         this.current_object_vision = {
             type:null,
@@ -122,7 +122,7 @@ class Room {
     }
 
     onChangeDarkAmbience(opacity){
-        if(this.vision === 'external' && !this.playerIsDeath){
+        if(this.vision === 'external' && this.killer_animatronic === null){
             this.dark_screen.style.opacity = opacity
             return
         }
@@ -157,7 +157,6 @@ class Room {
             const y = (ch / 2) - (ih * scale / 2);
             this.room_context.drawImage(this.room_image, x, y, iw * scale, ih * scale);
              if(this.vision === 'internal'){
-                // this.mirror.onDraw();
                 return
              }
         };
@@ -248,7 +247,7 @@ class Room {
 
     handleClick(event) {
 
-        if(!this.playerIsDeath){
+        if(this.killer_animatronic === null){
 
             const rect = this.room_canvas.getBoundingClientRect();
 

@@ -13,7 +13,11 @@ class Game {
         this.night_event_interval = null;
     }
 
-    onUpdatePlayerVision(){
+    onUpdatePlayerVision(animatronic){
+
+            if(animatronic === undefined || animatronic === null){
+                return
+            }
 
             if(this.player_room.vision !== 'external'){
                 return
@@ -61,6 +65,7 @@ class Game {
             unloaded_frame_list:animatronic.jumpscare_frame_list,
             scream_audio:animatronic.jumpscare_scream_audio
         })
+        this.x_moviment.setIsLocked(true,true);
         this.jumpscare.onStart();
         this.player_room.onChangeDarkAmbience('0%');
         this.toggle_bed_buttonn.style.display = 'none';
@@ -68,12 +73,28 @@ class Game {
     }
 
     onActiveAnimatronic(animatronic){
+        if(
+            this.player_room.killer_animatronic !== null
+            &&
+            this.player_room.killer_animatronic !== animatronic.identifier
+        ){
+            
+            console.log(animatronic.current_mode,"not action")
+            if(this.player_room.mirror.state_change_timeout !== null){
+                clearTimeout(this.player_room.mirror.state_change_timeout);
+                this.player_room.mirror.state_change_timeout = null;
+            }
+
+            return
+        }
 
         if(animatronic.isActive){
             console.log("animatronic ativo")
             if(animatronic.current_mode === 'mirror'){
-
-                if(this.player_room.mirror.current_animatronic_state === this.player_room.mirror.animatronic_final_state){
+                
+                if(
+                    this.player_room.killer_animatronic === animatronic.identifier
+                ){
                     this.onKillPlayer(animatronic);
                     return
                 }
@@ -89,9 +110,12 @@ class Game {
                             this.onUpdatePlayerVision();
                             this.player_room.mirror.state_change_timeout = null;
                             console.log("fim da mudança de estado",this.player_room.mirror.current_animatronic_state)
+                            if(this.player_room.mirror.current_animatronic_state === this.player_room.mirror.animatronic_final_state){
+                                this.player_room.killer_animatronic = animatronic.identifier
+                            }
                         }
 
-                    },12000)
+                    },4500)
                     
                     return
                 }
@@ -100,13 +124,10 @@ class Game {
 
             }
 
-
             if(!!animatronic.isMoving){
 
-            if(animatronic.current_place === 11){
-                this.onKillPlayer(animatronic);
-                return
-            }
+            // if(animatronic.current_place === 11){
+            // }
 
             const prev_current_animatronic_place = this.place_list.find((place_item)=>place_item.number === animatronic.current_place)
 
@@ -120,7 +141,7 @@ class Game {
                     console.log("current",current_animatronic_door)
                 
                     if(current_animatronic_door === undefined || current_animatronic_door === null){
-                         animatronic.current_place = 0;
+                         animatronic.current_place = 7;
                          animatronic.onResetVisitedPlaceList();
                          
                         return
@@ -133,16 +154,17 @@ class Game {
             const current_animatronic_place =  animatronic.onChoicePlace(this.place_list.find((place_item)=>place_item.number === animatronic.current_place).next_place_index_list);
             
             if(current_animatronic_place === 11){
-                this.player_room.playerIsDeath = true;
+                  this.player_room.killer_animatronic = animatronic.identifier;
+                    this.toggle_bed_buttonn.onclick = ()=>{}
+                this.onKillPlayer(animatronic);
                 
-                if(this.player_room.vision === 'external'){
+                // if(this.player_room.vision === 'external'){
 
-                    this.toggle_bed_buttonn.onclick = ()=>console.log("VOCE ESTÁ MORTO")
 
-                    return
-                }
-
+                //     return
+                // }
                 return
+
             }
 
             const next_current_animatronic_place = this.place_list.find((place_item)=>place_item.number === current_animatronic_place)
@@ -198,7 +220,7 @@ class Game {
                 next_current_animatronic_place.onSetView(((place_for_noisy) && animatronic.current_mode === 'noisy'));
 
             }
-            this.onUpdatePlayerVision();
+            this.onUpdatePlayerVision(animatronic);
 
             return
             }
@@ -225,6 +247,8 @@ class Game {
             // }
 
             this.onActiveAnimatronic(this.animatronic_list[0]);
+            this.onActiveAnimatronic(this.animatronic_list[1]);
+
         },this.current_night.event_running_interval);
 
         this.x_moviment.onMove();
