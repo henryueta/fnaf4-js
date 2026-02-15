@@ -16,7 +16,6 @@ class Place {
             return onSameList(this.animatronic_list.map((animatronic_item)=>animatronic_item.identifier),view_item.animatronic_list)
         }
         )
-        this.current_view = current_place_info.image;
         this.current_audio = current_place_info.audio;
         this.repeat_audio = current_place_info.repeat_audio;
         
@@ -51,30 +50,12 @@ class Place {
                
             }
             )
-            this.onSetView();
            }
         }
 
         return this.hasEnergy
     }
 
-    onSetView(isNoisy){
-        console.log(this.place_view_list,this.animatronic_list)
-
-        const filtered_place_view_list = (
-            isNoisy
-            ? this.place_view_list.filter((item)=>typeof item.noisy_animatronic === 'number')
-            : this.place_view_list
-        )
-
-
-         this.current_view = filtered_place_view_list.find((view_item)=>
-        {
-            return onSameList(this.animatronic_list.map((animatronic_item)=>animatronic_item.identifier),view_item.animatronic_list)
-        }
-        ).image
-
-    }
 
     onFindAnimatronic(identifier){
         return this.animatronic_list.find((animatronic_item)=>

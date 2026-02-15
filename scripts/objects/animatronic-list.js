@@ -1,5 +1,4 @@
 import { Animatronic } from "../classes/Animatronic.js";
-import { place_list } from "./place-list.js";
 
 const animatronic_list = [
     new Animatronic({
@@ -18,7 +17,7 @@ const animatronic_list = [
     ]    
     }),
     new Animatronic({
-    current_place:1,
+    current_place:null,
     identifier:1,
     isActive:true,
     isMoving:false,
@@ -32,6 +31,21 @@ const animatronic_list = [
         "../teste2.jpeg"
     ]    
     }),
+    new Animatronic({
+    current_place:null,
+    identifier:2,
+    isActive:true,
+    isMoving:false,
+    current_mode:'bed',
+    movement_delay:1500,
+    action_list:[
+    ],
+    jumpscare_frame_list:[
+        "../teste4.jpeg",
+        "../teste3.jpeg",
+        "../teste2.jpeg"
+    ]    
+    })
 ]
 
 export {

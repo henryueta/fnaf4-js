@@ -1,5 +1,7 @@
 import { Door } from "./Door.js";
+import { Hideout } from "./Hideout.js";
 import { Mirror } from "./Mirror.js";
+import { Window } from "./Window.js";
 
 class Room {
     constructor(config) {
@@ -8,8 +10,8 @@ class Room {
         this.room_image = new Image();
         this.room_image.src = config.room_image;
         this.vision = "internal";
-        this.killer_animatronic = null;
-        // this.current_door_vision = null;
+        this.isLockedAction = null;
+        this.isLockedAction = false;
         this.current_object_vision = {
             type:null,
             actions:null
@@ -19,8 +21,23 @@ class Room {
         this.flashlight_number_clicks = 0;
         this.direction = null;
         this.onLockVision = config.onLockVision;
+        this.bed = config.bed;
+        this.hideout = new Hideout({
+            furniture_room_context:this.room_context,
+            x:config.hideout.x,
+            y:config.hideout.y,
+            type:config.hideout.type,
+            width:config.hideout.width,
+            height:config.hideout.height,
+            animatronic_identifier:config.hideout.animatronic_identifier,
+            animatronic_view_list:config.hideout.animatronic_view_list,
+            vision_image:config.hideout.animatronic_view_list.find((animatronic_view)=>animatronic_view.state === 0).image,
+            onRectClick: (image,direction,type)=>{
+                this.onSwitchVision("hideout",image,"external",type,direction);
+            }
+        })
         this.mirror = new Mirror({
-            mirror_room_context:this.room_context,
+            furniture_room_context:this.room_context,
             x:config.mirror.x,
             y:config.mirror.y,
             type:config.mirror.type,
@@ -34,7 +51,7 @@ class Room {
             }
         })
         this.front_door = new Door({
-            door_room_context:this.room_context,
+            furniture_room_context:this.room_context,
             x:config.front_door.x,
             y:config.front_door.y,
             type:config.front_door.type,
@@ -47,30 +64,30 @@ class Room {
                 this.onSwitchVision("door",image,"external",type,direction);
             }
         });
-        this.right_door = new Door({
+        // this.right_door = new Door({
+        //     door_room_context:this.room_context,
+        //     x:config.right_door.x,
+        //     y:config.right_door.y,
+        //     type:config.right_door.type,
+        //     width: config.right_door.width, 
+        //     height: config.right_door.height,
+        //     place_location_number:config.right_door.place_location_number,
+        //     animatronic_view_list:config.right_door.animatronic_view_list,
+        //     vision_image:config.right_door.animatronic_view_list.find((animatronic_view)=>animatronic_view.identifier === null).image,
+        //     onRectClick: (image,direction,type)=>{
+        //         this.onSwitchVision("door",image,"external",type,direction);
+        //     }
+        // });
+        this.window = new Window({
             door_room_context:this.room_context,
-            x:config.right_door.x,
-            y:config.right_door.y,
-            type:config.right_door.type,
-            width: config.right_door.width, 
-            height: config.right_door.height,
-            place_location_number:config.right_door.place_location_number,
-            animatronic_view_list:config.right_door.animatronic_view_list,
-            vision_image:config.right_door.animatronic_view_list.find((animatronic_view)=>animatronic_view.identifier === null).image,
-            onRectClick: (image,direction,type)=>{
-                this.onSwitchVision("door",image,"external",type,direction);
-            }
-        });
-        this.left_door = new Door({
-            door_room_context:this.room_context,
-            x:config.left_door.x,
-            y:config.left_door.y,
-            type:config.left_door.type,
-            width: config.left_door.width, 
-            height: config.left_door.height,
-            place_location_number:config.left_door.place_location_number,
-            animatronic_view_list:config.left_door.animatronic_view_list,
-            vision_image:config.left_door.animatronic_view_list.find((animatronic_view)=>animatronic_view.identifier === null).image,
+            x:config.window.x,
+            y:config.window.y,
+            type:config.window.type,
+            width: config.window.width, 
+            height: config.window.height,
+            place_location_number:config.window.place_location_number,
+            animatronic_view_list:config.window.animatronic_view_list,
+            vision_image:config.window.animatronic_view_list.find((animatronic_view)=>animatronic_view.identifier === null).image,
             onRectClick: (image,direction,type)=>{
                 this.onSwitchVision("door",image,"external",type,direction);
             }
@@ -103,15 +120,15 @@ class Room {
             (
                 this.front_door.current_animatronic !== null
                  ||
-                 this.left_door.current_animatronic !== null
-                 ||
-                 this.right_door.current_animatronic !== null
+                 this.window.current_animatronic !== null
+                //  ||
+                //  this.right_door.current_animatronic !== null
             )
             ?
             [
                 this.front_door,
-                this.left_door,
-                this.right_door
+                this.window,
+                // this.right_door
                 ].find((door_item)=>
                 door_item.current_animatronic !== null
                 &&
@@ -122,7 +139,7 @@ class Room {
     }
 
     onChangeDarkAmbience(opacity){
-        if(this.vision === 'external' && this.killer_animatronic === null){
+        if(this.vision === 'external' && !this.isLockedAction){
             this.dark_screen.style.opacity = opacity
             return
         }
@@ -157,6 +174,7 @@ class Room {
             const y = (ch / 2) - (ih * scale / 2);
             this.room_context.drawImage(this.room_image, x, y, iw * scale, ih * scale);
              if(this.vision === 'internal'){
+                // this.hideout.onDraw();
                 return
              }
         };
@@ -195,7 +213,6 @@ class Room {
 
     onSwitchVision(object_type,room_image,vision,type,direction){
         this.direction = direction;
-
         if(!!type || type !== null){
             if(type === 'exit'){
 
@@ -208,6 +225,13 @@ class Room {
                     },200)
                 },200)
                 
+
+                if(object_type === 'hideout'){
+                    this.hideout.inUse = false;
+                    console.log("sem uso",this.hideout.inUse);
+                    return
+                }
+
                 return 
             }
             this.onEntraceContainerVision(type,direction)
@@ -224,8 +248,8 @@ class Room {
 
             const current_door_actions = [
                 this.front_door,
-                this.left_door,
-                this.right_door
+                this.window,
+                // this.right_door
             ].find((door)=>door.type === this.direction);
 
             // this.current_door_vision = current_door_actions;
@@ -247,7 +271,7 @@ class Room {
 
     handleClick(event) {
 
-        if(this.killer_animatronic === null){
+        if(!this.isLockedAction){
 
             const rect = this.room_canvas.getBoundingClientRect();
 
@@ -259,9 +283,10 @@ class Room {
 
             if(this.vision === 'internal'){
                 this.front_door.onClick(x,y);
-                this.right_door.onClick(x,y);
-                this.left_door.onClick(x,y);
+                // this.right_door.onClick(x,y);
+                this.window.onClick(x,y);
                 this.mirror.onClick(x,y);
+                this.hideout.onClick(x,y);
                 return
             }
             return

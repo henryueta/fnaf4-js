@@ -7,6 +7,7 @@ class Game {
         this.x_moviment = config.x_moviment;
         this.toggle_bed_buttonn = config.toggle_bed_buttonn;
         this.animatronic_list = config.animatronic_list;
+        this.killer_animatronic = null;
         this.jumpscare = null;
         this.place_list = config.place_list;
         this.current_night = config.current_night;
@@ -69,22 +70,22 @@ class Game {
         this.jumpscare.onStart();
         this.player_room.onChangeDarkAmbience('0%');
         this.toggle_bed_buttonn.style.display = 'none';
+        console.log("killed by",animatronic.identifier);
 
     }
 
     onActiveAnimatronic(animatronic){
         if(
-            this.player_room.killer_animatronic !== null
+            this.killer_animatronic !== null
             &&
-            this.player_room.killer_animatronic !== animatronic.identifier
+            this.killer_animatronic !== animatronic.identifier
         ){
             
-            console.log(animatronic.current_mode,"not action")
+            console.log(animatronic.current_mode,"not action");
             if(this.player_room.mirror.state_change_timeout !== null){
                 clearTimeout(this.player_room.mirror.state_change_timeout);
                 this.player_room.mirror.state_change_timeout = null;
             }
-
             return
         }
 
@@ -93,9 +94,27 @@ class Game {
             if(animatronic.current_mode === 'mirror'){
                 
                 if(
-                    this.player_room.killer_animatronic === animatronic.identifier
+                    this.killer_animatronic === animatronic.identifier
                 ){
-                    this.onKillPlayer(animatronic);
+                    if(this.player_room.hideout.inUse && !this.player_room.mirror.animatronicIsSearching){
+                        this.player_room.isLockedAction = true;
+                        this.player_room.mirror.animatronicIsSearching = true;
+                        console.log("animatronic procurando");
+                        setTimeout(()=>{    
+                            console.log("fim da procura");
+                            this.player_room.mirror.animatronicIsSearching = false;
+                            this.player_room.mirror.onChangeAnimatronicStateView(0);
+                            this.killer_animatronic = null;
+                            this.player_room.isLockedAction = false;
+                        },10000);
+                        return
+                    }
+                    
+                    if(!this.player_room.mirror.animatronicIsSearching){
+                        this.onKillPlayer(animatronic);
+                        return
+                    }
+
                     return
                 }
 
@@ -106,16 +125,19 @@ class Game {
                     this.player_room.mirror.state_change_timeout = setTimeout(()=>{
 
                          if(this.player_room.mirror.current_animatronic_state < this.player_room.mirror.animatronic_final_state){
+
                             this.player_room.mirror.onChangeAnimatronicStateView(this.player_room.mirror.current_animatronic_state+=1);
                             this.onUpdatePlayerVision();
                             this.player_room.mirror.state_change_timeout = null;
                             console.log("fim da mudança de estado",this.player_room.mirror.current_animatronic_state)
                             if(this.player_room.mirror.current_animatronic_state === this.player_room.mirror.animatronic_final_state){
-                                this.player_room.killer_animatronic = animatronic.identifier
+                                this.killer_animatronic = animatronic.identifier;
+                                console.log("se esconda")
                             }
+
                         }
 
-                    },4500)
+                    },this.player_room.mirror.state_timer_value)
                     
                     return
                 }
@@ -154,7 +176,8 @@ class Game {
             const current_animatronic_place =  animatronic.onChoicePlace(this.place_list.find((place_item)=>place_item.number === animatronic.current_place).next_place_index_list);
             
             if(current_animatronic_place === 11){
-                  this.player_room.killer_animatronic = animatronic.identifier;
+                this.player_room.isLockedAction = true;
+                  this.killer_animatronic = animatronic.identifier;
                     this.toggle_bed_buttonn.onclick = ()=>{}
                 this.onKillPlayer(animatronic);
                 
@@ -173,8 +196,8 @@ class Game {
 
                     const current_player_room_door = [
                         this.player_room.front_door,
-                        this.player_room.left_door,
-                        this.player_room.right_door
+                        this.player_room.window,
+                        // this.player_room.right_door
                     ].find((door)=>
                         door.place_location_number === next_current_animatronic_place.number
                     )
@@ -184,40 +207,16 @@ class Game {
 
                 }
 
-
-             
-
             if(animatronic.current_mode === 'hunter'){
                 if(!!next_current_animatronic_place.hasMultipleConnections && !!prev_current_animatronic_place.hasMultipleConnections){
                     
                     animatronic.visited_place_list.push(prev_current_animatronic_place.number)
                 }
             }
-
-            const place_for_noisy = next_current_animatronic_place.place_view_list.find((place_item)=>
-                typeof place_item.noisy_animatronic === 'number' 
-                &&
-                place_item.noisy_animatronic === animatronic.identifier
-            )
             
-            // if(animatronic.current_mode === 'noisy'){
-
-            //     if(!!place_for_noisy){
-            //         animatronic.isMoving = !place_for_noisy;
-            //         // next_current_animatronic_place.current_view = place_for_noisy.image;
-            //         next_current_animatronic_place.current_audio = place_for_noisy.audio;
-            //         next_current_animatronic_place.repeat_audio = place_for_noisy.repeat_audio;
-                    
-            //     }
-            //     console.log("moving",place_for_noisy)
-            // }
-
-            // animatronic.onAction(next_current_animatronic_place);
             if(prev_current_animatronic_place.number !== next_current_animatronic_place.number){
                 prev_current_animatronic_place.onRemoveAnimatronic(animatronic);
-                prev_current_animatronic_place.onSetView(false);
                 next_current_animatronic_place.onSetAnimatronic(animatronic);
-                next_current_animatronic_place.onSetView(((place_for_noisy) && animatronic.current_mode === 'noisy'));
 
             }
             this.onUpdatePlayerVision(animatronic);
@@ -229,6 +228,13 @@ class Game {
         }
     }
     
+    onStartNightEvent(){
+        this.night_event_interval = setInterval(()=>{
+            this.onActiveAnimatronic(this.animatronic_list[0]);
+            this.onActiveAnimatronic(this.animatronic_list[1]);
+        },this.current_night.event_running_interval);
+    }
+
     onStart(){
         // 4 - 10 - 11
         //
@@ -239,18 +245,7 @@ class Game {
             ),true)
         }
 
-        this.night_event_interval = setInterval(()=>{
-            // for(const animatronic of this.animatronic_list){
-            //     setTimeout(()=>{
-            //         this.onActiveAnimatronic(animatronic);
-            //     },animatronic.movement_delay)
-            // }
-
-            this.onActiveAnimatronic(this.animatronic_list[0]);
-            this.onActiveAnimatronic(this.animatronic_list[1]);
-
-        },this.current_night.event_running_interval);
-
+        // this.onStartNightEvent();   
         this.x_moviment.onMove();
 
         // this.toggle_bed_buttonn.addEventListener('mousemove',()=>{
@@ -260,8 +255,19 @@ class Game {
 
             if(this.player_room.vision === 'internal'){
                 this.x_moviment.onEndMove();
+                this.player_room.direction = this.player_room.bed.type;
+                this.player_room.onSwitchVision((
+                    "bed"
+                ),this.player_room.bed.vision_image,"external",'entrace',this.player_room.direction)
+
                 return
             }
+
+            if(!!this.player_room.mirror.animatronicIsSearching){
+                this.onKillPlayer(this.animatronic_list[this.player_room.mirror.animatronic_identifier])
+                return
+            }
+
             this.player_room.onSwitchVision((
                 this.player_room.current_object_vision.type
             ),"../bedroom_1.jpeg","internal",'exit',this.player_room.direction)

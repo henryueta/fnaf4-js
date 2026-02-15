@@ -1,9 +1,10 @@
+import { Door } from "./Door.js";
 
-class Window {
+class Window extends Door{
 
     constructor(config){
 
-        
+        super(config);
 
     }
 
