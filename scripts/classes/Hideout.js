@@ -7,11 +7,9 @@ class Hideout extends Furniture{
         this.inUse = false;
     }
 
-    onClick(x,y){
-        if(super.onClick(x,y)){
-             this.inUse = true;
-            console.log("em uso: ",this.inUse)
-        }
+    onClick(){
+         this.inUse = true;
+        console.log("em uso: ",this.inUse)
     }
 
 }

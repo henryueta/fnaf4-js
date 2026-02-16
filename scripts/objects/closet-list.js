@@ -1,9 +1,13 @@
-import { Bed } from "../classes/Bed.js";
+import { Closet } from "../classes/Closet.js";
 
-const bed_list = [
-    new Bed({
-        type:'bottom',
-        vision_image:"../teste4.jpeg",
+const closet_list = [
+    new Closet({
+        x:1000,
+        y:170,
+        width: 220, 
+        height: 450,
+        type:'right',
+        vision_image:"../vinheta.jpeg",
         audio_heard:"",
         animatronic_identifier:2,
         animatronic_audio_list:[
@@ -22,5 +26,5 @@ const bed_list = [
 ] 
 
 export {
-    bed_list
+    closet_list
 }

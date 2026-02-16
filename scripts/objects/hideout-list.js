@@ -5,7 +5,7 @@ const hideout_list = [
         y:170,
         width: 220, 
         height: 450,
-        type:'right',
+        type:'',
         animatronic_identifier:1,
         animatronic_view_list:[
             {

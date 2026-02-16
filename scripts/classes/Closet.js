@@ -1,9 +1,8 @@
 import { StateObject } from "./StateObject.js";
 
-class Bed extends StateObject{
+class Closet extends StateObject{
 
     constructor(config){
-
         super(config);
         this.animatronic_audio_list = config.animatronic_audio_list;
         this.audio_heard = config.audio_heard;
@@ -20,5 +19,5 @@ class Bed extends StateObject{
 }
 
 export {
-    Bed
+    Closet
 }

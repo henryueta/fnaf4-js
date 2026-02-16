@@ -4,11 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Security</title>
-    <link rel="stylesheet" href="../styles/index.css">
-    <link rel="stylesheet" href="../styles/cam-system.css">
-    <link rel="stylesheet" href="../styles/room-system.css">
+    <link rel="preload" href="../styles/cam-system.css" as="style" onload="this.rel='stylesheet'">
+    <link rel="preload" href="../styles/room-system.css" as="style" onload="this.rel='stylesheet'">
+    <link rel="preload" href="../styles/index.css" as="style" onload="this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="../styles/index.css">
+        <link rel="stylesheet" href="../styles/room-system.css">
+        <link rel="stylesheet" href="../styles/cam-system.css">
+    </noscript>
 </head>
-    <body class="teste">
+    <body>
     <div class="dark-screen-container"></div>
     <!-- <div class="room-darkness-container">
         <img src="../bedroom_darkness.png" alt="">
@@ -29,6 +34,8 @@
     <div class="move-left-container">
     </div>
 
-    <script src="../scripts/game.js" type="module"></script>
+    
+
+    <script src="../scripts/game.js" type="module" defer></script>
 </body>
 </html>

@@ -20,7 +20,9 @@ const mirror_list = [
                 state:2,
                 image:"../teste2.jpeg"
             }
-        ]
+        ],
+        animatronic_final_state:2,
+        state_timer_value:4500
     }
 ]
 

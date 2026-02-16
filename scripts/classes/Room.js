@@ -21,7 +21,9 @@ class Room {
         this.flashlight_number_clicks = 0;
         this.direction = null;
         this.onLockVision = config.onLockVision;
-        this.bed = config.bed;
+        this.closet = config.closet;
+        this.closet.furniture_room_context = this.room_context;
+        this.closet.onRectClick = (image,direction,type)=>this.onSwitchVision("closet",image,"external",type,direction);
         this.hideout = new Hideout({
             furniture_room_context:this.room_context,
             x:config.hideout.x,
@@ -46,6 +48,8 @@ class Room {
             animatronic_identifier:config.mirror.animatronic_identifier,
             animatronic_view_list:config.mirror.animatronic_view_list,
             vision_image:config.mirror.animatronic_view_list.find((animatronic_view)=>animatronic_view.state === 0).image,
+            animatronic_final_state:config.mirror.animatronic_final_state,
+            state_timer_value:config.mirror.state_timer_value,
             onRectClick: (image,direction,type)=>{
                 this.onSwitchVision("mirror",image,"external",type,direction);
             }
@@ -174,7 +178,7 @@ class Room {
             const y = (ch / 2) - (ih * scale / 2);
             this.room_context.drawImage(this.room_image, x, y, iw * scale, ih * scale);
              if(this.vision === 'internal'){
-                // this.hideout.onDraw();
+                // this.closet.onDraw();
                 return
              }
         };
@@ -198,7 +202,7 @@ class Room {
         this.onReset();
         this.room_image.src = room_image;
         this.onLoadImage();
-        this.onLockVision(vision);
+        this.onLockVision(vision);  
     }
 
     onEntraceContainerVision(type,direction){
@@ -283,10 +287,9 @@ class Room {
 
             if(this.vision === 'internal'){
                 this.front_door.onClick(x,y);
-                // this.right_door.onClick(x,y);
+                this.closet.onClick(x,y);
                 this.window.onClick(x,y);
                 this.mirror.onClick(x,y);
-                this.hideout.onClick(x,y);
                 return
             }
             return

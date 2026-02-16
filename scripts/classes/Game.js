@@ -44,9 +44,10 @@ class Game {
                 }
                 return
             }
+            console.log(this.player_room.current_object_vision.actions.vision_image)
             this.player_room.room_image.src = this.player_room.current_object_vision.actions.vision_image;
             this.player_room.onLoadImage();
-
+            console.log("loaded")
             return
 
     }
@@ -106,7 +107,7 @@ class Game {
                             this.player_room.mirror.onChangeAnimatronicStateView(0);
                             this.killer_animatronic = null;
                             this.player_room.isLockedAction = false;
-                        },10000);
+                        },5000);
                         return
                     }
                     
@@ -127,7 +128,7 @@ class Game {
                          if(this.player_room.mirror.current_animatronic_state < this.player_room.mirror.animatronic_final_state){
 
                             this.player_room.mirror.onChangeAnimatronicStateView(this.player_room.mirror.current_animatronic_state+=1);
-                            this.onUpdatePlayerVision();
+                            this.onUpdatePlayerVision(animatronic);
                             this.player_room.mirror.state_change_timeout = null;
                             console.log("fim da mudança de estado",this.player_room.mirror.current_animatronic_state)
                             if(this.player_room.mirror.current_animatronic_state === this.player_room.mirror.animatronic_final_state){
@@ -230,7 +231,7 @@ class Game {
     
     onStartNightEvent(){
         this.night_event_interval = setInterval(()=>{
-            this.onActiveAnimatronic(this.animatronic_list[0]);
+            // this.onActiveAnimatronic(this.animatronic_list[0]);
             this.onActiveAnimatronic(this.animatronic_list[1]);
         },this.current_night.event_running_interval);
     }
@@ -245,7 +246,7 @@ class Game {
             ),true)
         }
 
-        // this.onStartNightEvent();   
+        this.onStartNightEvent();   
         this.x_moviment.onMove();
 
         // this.toggle_bed_buttonn.addEventListener('mousemove',()=>{
@@ -255,11 +256,11 @@ class Game {
 
             if(this.player_room.vision === 'internal'){
                 this.x_moviment.onEndMove();
-                this.player_room.direction = this.player_room.bed.type;
+                this.player_room.direction = this.player_room.hideout.type;
                 this.player_room.onSwitchVision((
-                    "bed"
-                ),this.player_room.bed.vision_image,"external",'entrace',this.player_room.direction)
-
+                    "hideout"
+                ),this.player_room.hideout.vision_image,"external",'entrace',this.player_room.direction)
+                this.player_room.hideout.onClick();
                 return
             }
 

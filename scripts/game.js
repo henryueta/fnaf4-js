@@ -1,4 +1,3 @@
-import { Animatronic } from "./classes/Animatronic.js"
 import { Movement } from "./classes/Movement.js"
 import { Room } from "./classes/Room.js"
 import { place_list } from "./objects/place-list.js"
@@ -8,7 +7,7 @@ import { night_list } from "./objects/night-list.js"
 import { door_list } from "./objects/door-list.js"
 import { mirror_list } from "./objects/mirror-list.js"
 import { hideout_list } from "./objects/hideout-list.js"
-import { bed_list } from "./objects/bed-list.js"
+import { closet_list } from "./objects/closet-list.js"
 
 const game = new Game({
     player_room: new Room({
@@ -19,7 +18,7 @@ const game = new Game({
         // right_door:door_list[2],
         mirror:mirror_list[0],
         hideout:hideout_list[0],
-        bed:bed_list[0],
+        closet:closet_list[0],
         dark_screen:document.querySelector(".dark-screen-container"),
         room_darkness:document.querySelector(".room-darkness-container")
     }),
@@ -35,19 +34,4 @@ const game = new Game({
 
 game.onStart();
 
-
-const timeouts = [
-    {
-        timeout:2000,
-        action:()=>{
-            console.log(1)
-        }
-    },
-    {
-        timeout:5000,
-        action:()=>{
-            console.log(2)
-        }
-    }
-];
 

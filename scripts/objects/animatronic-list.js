@@ -36,7 +36,7 @@ const animatronic_list = [
     identifier:2,
     isActive:true,
     isMoving:false,
-    current_mode:'bed',
+    current_mode:'closet',
     movement_delay:1500,
     action_list:[
     ],
