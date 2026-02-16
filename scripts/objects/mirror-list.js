@@ -22,7 +22,8 @@ const mirror_list = [
             }
         ],
         animatronic_final_state:2,
-        state_timer_value:4500
+        state_timer_value:4500,
+        player_waiting_value:5000
     }
 ]
 

@@ -44,6 +44,12 @@ class Game {
                 }
                 return
             }
+
+            if(this.player_room.current_object_vision.type === 'closet'){
+                this.player_room.current_object_vision.actions.onListenAudio();
+                return
+            }
+
             console.log(this.player_room.current_object_vision.actions.vision_image)
             this.player_room.room_image.src = this.player_room.current_object_vision.actions.vision_image;
             this.player_room.onLoadImage();
@@ -75,6 +81,118 @@ class Game {
 
     }
 
+    onChangeState(animatronic){
+
+            if(
+                animatronic.current_mode === 'mirror'
+                ||
+                animatronic.current_mode === 'closet'
+            ){
+                
+                const current_state_object = (
+                    animatronic.current_mode === 'mirror'
+                    ? this.player_room.mirror
+                    : 
+                    animatronic.current_mode === 'closet'
+                    ? this.player_room.closet
+                    : null
+                );
+
+                if(current_state_object === null){
+                    throw new Error("Objeto de mudança de estado inválido");
+                }
+
+                const state_object_field = (
+                    animatronic.current_mode === 'mirror'
+                    ? ['animatronicIsSearching']
+                    : 
+                    animatronic.current_mode === 'closet'
+                    ? ['playerIsListening']
+                    : null
+                )
+
+                if(
+                    this.killer_animatronic === animatronic.identifier
+                ){
+
+                    const state_object_timeout_checkout = (
+                        animatronic.current_mode === 'mirror'
+                        ? !!(this.player_room.hideout.inUse 
+                            && 
+                            !current_state_object[state_object_field])
+                        :
+                        animatronic.current_mode === 'closet'
+                        ? !!(!!current_state_object[state_object_field])
+                        :
+                        null     
+                    );
+
+                    if(state_object_timeout_checkout){
+
+                        this.player_room.isLockedAction = true;
+                        current_state_object[state_object_field] = (
+                            animatronic.current_mode === 'mirror'
+                            ? true
+                            : current_state_object[state_object_field]
+                        );
+                        console.log("animatronic procurando");
+
+                        current_state_object.player_waiting_timeout =setTimeout(()=>{    
+                            console.log("fim da destruição do estado");
+
+                            current_state_object[state_object_field] = (
+                            animatronic.current_mode === 'mirror'
+                            ? false
+                            : current_state_object[state_object_field]
+                            );
+
+                            current_state_object.onChangeAnimatronicState(0);
+                            this.killer_animatronic = null;
+                            this.player_room.isLockedAction = false;
+                        },current_state_object.player_waiting_value);
+                        return
+                        
+                    }
+                    
+                    if(!current_state_object[state_object_field]){
+                        this.player_room.isLockedAction = true;
+                        console.log("morto por tipo:",animatronic.current_mode)
+                        this.onKillPlayer(animatronic);
+                        return
+                    }
+
+                    return
+                }
+
+
+
+                if(
+                    current_state_object.state_change_timeout === null 
+                ){
+                    console.log("lançando nova mudança de estado")
+                    current_state_object.state_change_timeout = setTimeout(()=>{
+                        console.log("event",current_state_object.current_animatronic_state < current_state_object.animatronic_final_state)
+                         if(current_state_object.current_animatronic_state < current_state_object.animatronic_final_state){
+
+                            current_state_object.onChangeAnimatronicState(current_state_object.current_animatronic_state+=1);
+                            this.onUpdatePlayerVision(animatronic);
+                            current_state_object.state_change_timeout = null;
+                            console.log("fim da mudança de estado",current_state_object.current_animatronic_state)
+                            if(current_state_object.current_animatronic_state === current_state_object.animatronic_final_state){
+                                this.killer_animatronic = animatronic.identifier;
+                                return
+                            }
+                            return
+                        }
+
+                    },current_state_object.state_timer_value)
+                    
+                    return
+                }
+                return
+            }
+    }
+
     onActiveAnimatronic(animatronic){
         if(
             this.killer_animatronic !== null
@@ -91,61 +209,8 @@ class Game {
         }
 
         if(animatronic.isActive){
-            console.log("animatronic ativo")
-            if(animatronic.current_mode === 'mirror'){
-                
-                if(
-                    this.killer_animatronic === animatronic.identifier
-                ){
-                    if(this.player_room.hideout.inUse && !this.player_room.mirror.animatronicIsSearching){
-                        this.player_room.isLockedAction = true;
-                        this.player_room.mirror.animatronicIsSearching = true;
-                        console.log("animatronic procurando");
-                        setTimeout(()=>{    
-                            console.log("fim da procura");
-                            this.player_room.mirror.animatronicIsSearching = false;
-                            this.player_room.mirror.onChangeAnimatronicStateView(0);
-                            this.killer_animatronic = null;
-                            this.player_room.isLockedAction = false;
-                        },5000);
-                        return
-                    }
-                    
-                    if(!this.player_room.mirror.animatronicIsSearching){
-                        this.onKillPlayer(animatronic);
-                        return
-                    }
-
-                    return
-                }
-
-                if(
-                    this.player_room.mirror.state_change_timeout === null 
-                ){
-                    console.log("lançando nova mudança de estado")
-                    this.player_room.mirror.state_change_timeout = setTimeout(()=>{
-
-                         if(this.player_room.mirror.current_animatronic_state < this.player_room.mirror.animatronic_final_state){
-
-                            this.player_room.mirror.onChangeAnimatronicStateView(this.player_room.mirror.current_animatronic_state+=1);
-                            this.onUpdatePlayerVision(animatronic);
-                            this.player_room.mirror.state_change_timeout = null;
-                            console.log("fim da mudança de estado",this.player_room.mirror.current_animatronic_state)
-                            if(this.player_room.mirror.current_animatronic_state === this.player_room.mirror.animatronic_final_state){
-                                this.killer_animatronic = animatronic.identifier;
-                                console.log("se esconda")
-                            }
-
-                        }
-
-                    },this.player_room.mirror.state_timer_value)
-                    
-                    return
-                }
-
-                return
-
-            }
+            console.log("animatronic ativo");
+            this.onChangeState(animatronic);
 
             if(!!animatronic.isMoving){
 
@@ -157,9 +222,9 @@ class Game {
               if(!!prev_current_animatronic_place.hasSecurityRoomConnection)
                {
 
-                    console.log("entrou aqui")
+                    console.log("entrou aqui");
 
-                    const current_animatronic_door = this.player_room.onFindAnimatronic(animatronic.identifier)
+                    const current_animatronic_door = this.player_room.onFindAnimatronic(animatronic.identifier);
                     
                     console.log("current",current_animatronic_door)
                 
@@ -178,8 +243,8 @@ class Game {
             
             if(current_animatronic_place === 11){
                 this.player_room.isLockedAction = true;
-                  this.killer_animatronic = animatronic.identifier;
-                    this.toggle_bed_buttonn.onclick = ()=>{}
+                this.killer_animatronic = animatronic.identifier;
+                this.toggle_bed_buttonn.onclick = ()=>{}
                 this.onKillPlayer(animatronic);
                 
                 // if(this.player_room.vision === 'external'){
@@ -195,23 +260,21 @@ class Game {
 
                 if(next_current_animatronic_place.hasSecurityRoomConnection){
 
-                    const current_player_room_door = [
+                    const current_player_room_entrace = [
                         this.player_room.front_door,
                         this.player_room.window,
-                        // this.player_room.right_door
-                    ].find((door)=>
-                        door.place_location_number === next_current_animatronic_place.number
-                    )
+                    ].find((entrace)=>
+                        entrace.place_location_number === next_current_animatronic_place.number
+                    );
 
-                    console.log("Porta encontrada: ",current_player_room_door)
-                    current_player_room_door.onSetAnimatronicView(animatronic.identifier)
+                    console.log("Porta encontrada: ",current_player_room_entrace);
+                    current_player_room_entrace.onSetAnimatronicView(animatronic.identifier);
 
                 }
 
             if(animatronic.current_mode === 'hunter'){
                 if(!!next_current_animatronic_place.hasMultipleConnections && !!prev_current_animatronic_place.hasMultipleConnections){
-                    
-                    animatronic.visited_place_list.push(prev_current_animatronic_place.number)
+                    animatronic.visited_place_list.push(prev_current_animatronic_place.number);
                 }
             }
             
@@ -232,13 +295,13 @@ class Game {
     onStartNightEvent(){
         this.night_event_interval = setInterval(()=>{
             // this.onActiveAnimatronic(this.animatronic_list[0]);
-            this.onActiveAnimatronic(this.animatronic_list[1]);
+            // this.onActiveAnimatronic(this.animatronic_list[1]);
+            this.onActiveAnimatronic(this.animatronic_list[2]);
         },this.current_night.event_running_interval);
     }
 
     onStart(){
-        // 4 - 10 - 11
-        //
+
         this.player_room.onDraw();
         this.player_room.onLockVision = (vision)=>{
             this.x_moviment.setIsLocked(!!(
@@ -252,6 +315,7 @@ class Game {
         // this.toggle_bed_buttonn.addEventListener('mousemove',()=>{
            
         // })
+
         this.toggle_bed_buttonn.addEventListener('click',()=>{
 
             if(this.player_room.vision === 'internal'){
@@ -265,13 +329,19 @@ class Game {
             }
 
             if(!!this.player_room.mirror.animatronicIsSearching){
-                this.onKillPlayer(this.animatronic_list[this.player_room.mirror.animatronic_identifier])
+                //mudar aqui
+                if(this.player_room.mirror.player_waiting_timeout !== null){
+                    clearTimeout(this.player_room.mirror.player_waiting_timeout);
+                    this.player_room.mirror.player_waiting_timeout = null;
+                }
+
+                this.onKillPlayer(this.animatronic_list[this.player_room.mirror.animatronic_identifier]);
                 return
             }
 
             this.player_room.onSwitchVision((
                 this.player_room.current_object_vision.type
-            ),"../bedroom_1.jpeg","internal",'exit',this.player_room.direction)
+            ),"../bedroom_1.jpeg","internal",'exit',this.player_room.direction);
             return
         })
     }

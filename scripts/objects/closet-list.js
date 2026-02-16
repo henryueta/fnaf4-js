@@ -13,15 +13,16 @@ const closet_list = [
         animatronic_audio_list:[
             {
                 state:0,
-                audio:""
+                audio:null
             },
             {
                 state:1,
-                audio:""
+                audio:"../assets/audio/breathing.mp3"
             }
         ],
         animatronic_final_state:1,
-        state_timer_value:3000
+        state_timer_value:3000,
+        player_waiting_value:3000
     })
 ] 
 

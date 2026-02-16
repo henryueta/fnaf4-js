@@ -50,6 +50,7 @@ class Room {
             vision_image:config.mirror.animatronic_view_list.find((animatronic_view)=>animatronic_view.state === 0).image,
             animatronic_final_state:config.mirror.animatronic_final_state,
             state_timer_value:config.mirror.state_timer_value,
+            player_waiting_value: config.mirror.player_waiting_value,
             onRectClick: (image,direction,type)=>{
                 this.onSwitchVision("mirror",image,"external",type,direction);
             }
@@ -232,7 +233,13 @@ class Room {
 
                 if(object_type === 'hideout'){
                     this.hideout.inUse = false;
-                    console.log("sem uso",this.hideout.inUse);
+                    console.log("sem uso: ",this.hideout.inUse);
+                    return
+                }
+
+                if(object_type === 'closet'){
+                    this.closet.onListen(false);
+                    console.log("não escutando: ",this.closet.playerIsListening);
                     return
                 }
 
@@ -266,8 +273,15 @@ class Room {
         this.current_object_vision.actions = (
             object_type === 'mirror'
             ? this.mirror
+            : 
+            object_type === 'closet'
+            ? this.closet
             : null
         );
+
+        if(this.current_object_vision.actions === null){
+            throw new Error("Ações de objeto de visão inválidas");
+        }
 
         return
     }

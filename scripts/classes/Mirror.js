@@ -7,7 +7,7 @@ class Mirror extends StateObject{
         this.animatronicIsSearching = false;
     }
 
-    onChangeAnimatronicStateView(state){
+    onChangeAnimatronicState(state){
         super.onChangeAnimatronicState(state,()=>{
             this.vision_image = this.animatronic_view_list.find((animatronic_view)=>
                 animatronic_view.state === state

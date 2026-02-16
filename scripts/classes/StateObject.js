@@ -8,6 +8,8 @@ class StateObject extends Furniture{
         this.animatronic_final_state = config.animatronic_final_state;
         this.state_change_timeout = null;
         this.state_timer_value = config.state_timer_value;
+        this.player_waiting_timeout = null;
+        this.player_waiting_value = config.player_waiting_value; 
     }
 
     onChangeAnimatronicState(state,onAction){   

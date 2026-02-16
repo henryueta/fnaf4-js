@@ -45,6 +45,21 @@ const animatronic_list = [
         "../teste3.jpeg",
         "../teste2.jpeg"
     ]    
+    }),
+    new Animatronic({
+    current_place:null,
+    identifier:3,
+    isActive:true,
+    isMoving:true,
+    current_mode:'window',
+    movement_delay:1500,
+    action_list:[
+    ],
+    jumpscare_frame_list:[
+        "../teste4.jpeg",
+        "../teste3.jpeg",
+        "../teste2.jpeg"
+    ]    
     })
 ]
 
