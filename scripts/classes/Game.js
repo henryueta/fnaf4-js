@@ -1,4 +1,5 @@
 import { Jumpscare } from "./Jumpscare.js";
+import { StateWarning } from "./StateWarning.js";
 
 class Game {
 
@@ -9,6 +10,7 @@ class Game {
         this.animatronic_list = config.animatronic_list;
         this.killer_animatronic = null;
         this.jumpscare = null;
+        this.state_warning = new StateWarning();
         this.place_list = config.place_list;
         this.current_night = config.current_night;
         this.night_event_interval = null;
@@ -139,11 +141,15 @@ class Game {
     }
 
     onChangeState(animatronic){
+            
+            const current_state_warning = this.state_warning.onChoiceWarning();
 
             if(
                 animatronic.current_mode === 'mirror'
                 ||
                 animatronic.current_mode === 'closet'
+                ||
+                !current_state_warning
             ){
                 
                 const current_state_object = (
@@ -176,8 +182,6 @@ class Game {
 
                     return
                 }
-
-
 
                 if(
                     current_state_object.state_change_timeout === null 
