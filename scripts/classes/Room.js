@@ -50,6 +50,7 @@ class Room {
             vision_image:config.mirror.animatronic_view_list.find((animatronic_view)=>animatronic_view.state === 0).image,
             animatronic_final_state:config.mirror.animatronic_final_state,
             state_timer_value:config.mirror.state_timer_value,
+            waiting_process_value:config.mirror.waiting_process_value,
             player_waiting_value: config.mirror.player_waiting_value,
             onRectClick: (image,direction,type)=>{
                 this.onSwitchVision("mirror",image,"external",type,direction);

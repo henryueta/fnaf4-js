@@ -13,7 +13,8 @@ class Closet extends StateObject{
 
     onClick(x,y){
         if(super.onClick(x,y)){
-            this.onListen(true);
+            console.log("Em processo de espera: ",this.waiting_process_timeout !== null)
+            this.onListen(this.waiting_process_timeout !== null);
              this.onListenAudio();
             console.log("escutando: ",this.playerIsListening)
             return

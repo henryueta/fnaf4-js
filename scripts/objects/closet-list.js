@@ -22,7 +22,8 @@ const closet_list = [
         ],
         animatronic_final_state:1,
         state_timer_value:10000,
-        player_waiting_value:3000
+        player_waiting_value:3000,
+        waiting_process_value:5000
     })
 ] 
 

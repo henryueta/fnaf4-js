@@ -4,7 +4,6 @@ class Mirror extends StateObject{
 
     constructor(config){
         super(config);
-        this.animatronicIsSearching = false;
     }
 
     onChangeAnimatronicState(state){

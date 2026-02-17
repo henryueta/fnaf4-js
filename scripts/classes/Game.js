@@ -81,6 +81,63 @@ class Game {
 
     }
 
+    onPreventDeath(animatronic,current_state_object){
+
+        const state_object_field = (
+        animatronic.current_mode === 'mirror'
+        ? ['animatronicIsSearching']
+        : 
+        animatronic.current_mode === 'closet'
+        ? ['playerIsListening']
+        : null
+        )
+
+        const state_object_timeout_checkout = (
+            animatronic.current_mode === 'mirror'
+            ? !!(this.player_room.hideout.inUse 
+                && 
+                !current_state_object[state_object_field])
+            :
+            animatronic.current_mode === 'closet'
+            ? !!(!!current_state_object[state_object_field])
+            :
+            null     
+        );
+
+        if(state_object_timeout_checkout){  
+
+            this.player_room.isLockedAction = true;
+            current_state_object.animatronicIsSearching = true;
+            // clearTimeout(this.night_event_interval);
+            // this.night_event_interval = null;
+            console.log("animatronic " + current_state_object.animatronic_identifier + " procurando. . .");
+
+            current_state_object.player_waiting_timeout =setTimeout(()=>{   
+                 
+                console.log("fim da destruição do estado")
+
+                current_state_object.animatronicIsSearching = false;
+               
+                current_state_object.onChangeAnimatronicState(0);
+                console.log("LIMPAR ESTADO: ",current_state_object.animatronic_identifier);
+
+                this.killer_animatronic = null;
+                this.player_room.isLockedAction = false;
+                current_state_object.player_waiting_timeout = null;
+
+            },current_state_object.player_waiting_value);
+            return
+                        
+        }
+        if(!current_state_object[state_object_field]){
+            this.player_room.isLockedAction = true;
+            console.log("morto por tipo:",animatronic.current_mode)
+            this.onKillPlayer(animatronic);
+            return
+        }
+
+    }
+
     onChangeState(animatronic){
 
             if(
@@ -102,67 +159,20 @@ class Game {
                     throw new Error("Objeto de mudança de estado inválido");
                 }
 
-                const state_object_field = (
-                    animatronic.current_mode === 'mirror'
-                    ? ['animatronicIsSearching']
-                    : 
-                    animatronic.current_mode === 'closet'
-                    ? ['playerIsListening']
-                    : null
-                )
-
                 if(
                     this.killer_animatronic === animatronic.identifier
+                    &&
+                    !current_state_object.animatronicIsSearching
                 ){
 
-                    const state_object_timeout_checkout = (
-                        animatronic.current_mode === 'mirror'
-                        ? !!(this.player_room.hideout.inUse 
-                            && 
-                            !current_state_object[state_object_field])
-                        :
-                        animatronic.current_mode === 'closet'
-                        ? !!(!!current_state_object[state_object_field])
-                        :
-                        null     
-                    );
+                    current_state_object.onChangeAnimatronicState(current_state_object.current_animatronic_state);
+                    this.onUpdatePlayerVision(animatronic);
+                    console.log("Se prepare");
 
-                    if(state_object_timeout_checkout){
-
-                        this.player_room.isLockedAction = true;
-                        current_state_object[state_object_field] = (
-                            animatronic.current_mode === 'mirror'
-                            ? true
-                            : current_state_object[state_object_field]
-                        );
-                        // clearTimeout(this.night_event_interval);
-                        // this.night_event_interval = null;
-                        console.log("animatronic " + current_state_object.animatronic_identifier + " procurando. . .");
-
-                        current_state_object.player_waiting_timeout =setTimeout(()=>{    
-                            console.log("fim da destruição do estado");
-
-                            current_state_object[state_object_field] = (
-                            animatronic.current_mode === 'mirror'
-                            ? false
-                            : current_state_object[state_object_field]
-                            );
-
-                            current_state_object.onChangeAnimatronicState(0);
-                            console.log("LIMPAR ESTADO: ",current_state_object.animatronic_identifier)
-                            this.killer_animatronic = null;
-                            this.player_room.isLockedAction = false;
-                            current_state_object.player_waiting_timeout = null;
-                        },current_state_object.player_waiting_value);
-                        return
-                        
-                    }
-                    if(!current_state_object[state_object_field]){
-                        this.player_room.isLockedAction = true;
-                        console.log("morto por tipo:",animatronic.current_mode)
-                        this.onKillPlayer(animatronic);
-                        return
-                    }
+                    current_state_object.waiting_process_timeout = setTimeout(()=>{
+                        this.onPreventDeath(animatronic,current_state_object);
+                        current_state_object.waiting_process_timeout = null;
+                    },current_state_object.waiting_process_value);
 
                     return
                 }
@@ -195,10 +205,16 @@ class Game {
                     // }
                         current_state_object.state_change_timeout = setTimeout(()=>{
                                 if(current_state_object.current_animatronic_state < current_state_object.animatronic_final_state){
-                                
-                                    current_state_object.onChangeAnimatronicState(current_state_object.current_animatronic_state+=1);
-
-                                    this.onUpdatePlayerVision(animatronic);
+                                    
+                                    !!(current_state_object.current_animatronic_state !== (current_state_object.animatronic_final_state-1))
+                                    ? (()=>{
+                                        current_state_object.onChangeAnimatronicState(current_state_object.current_animatronic_state+=1);
+                                        this.onUpdatePlayerVision(animatronic);
+                                    })()
+                                    : (()=>{
+                                        current_state_object.current_animatronic_state+=1;
+                                    })();
+                                    
                                     current_state_object.state_change_timeout = null;
                                     console.log("fim da mudança de estado de "+current_state_object.animatronic_identifier,current_state_object.current_animatronic_state)
                                 }    
@@ -259,7 +275,6 @@ class Game {
                     if(current_animatronic_door === undefined || current_animatronic_door === null){
                          animatronic.current_place = 7;
                          animatronic.onResetVisitedPlaceList();
-                         
                         return
                     }
                }
@@ -322,9 +337,9 @@ class Game {
     
     onStartNightEvent(){
         this.night_event_interval = setInterval(()=>{
-            this.onActiveAnimatronic(this.animatronic_list[0]);
-            this.onActiveAnimatronic(this.animatronic_list[1]);
-            this.onActiveAnimatronic(this.animatronic_list[2]);
+            // this.onActiveAnimatronic(this.animatronic_list[0]);
+            // this.onActiveAnimatronic(this.animatronic_list[1]);
+            // this.onActiveAnimatronic(this.animatronic_list[2]);
         },this.current_night.event_running_interval);
     }
 
@@ -357,18 +372,22 @@ class Game {
             }
 
             if(
-                this.player_room.closet.current_animatronic_state === this.player_room.closet.animatronic_final_state
+                !!this.player_room.closet.animatronicIsSearching
+                &&
+                !!this.player_room.closet.playerIsListening
             ){
-                clearTimeout(this.player_room.closet.player_waiting_timeout);
+                this.player_room.closet.clearTimeoutEvents();
                 this.player_room.closet.onListen(false);
                 this.onKillPlayer(this.animatronic_list[this.player_room.closet.animatronic_identifier]);
                 return
             }
 
-            if(!!this.player_room.mirror.animatronicIsSearching){
+            if(
+                !!this.player_room.mirror.animatronicIsSearching
+            ){
                 //mudar aqui
                 if(this.player_room.mirror.player_waiting_timeout !== null){
-                    clearTimeout(this.player_room.mirror.player_waiting_timeout);
+                    this.player_room.closet.clearTimeoutEvents();
                     this.player_room.mirror.player_waiting_timeout = null;
                 }
 
