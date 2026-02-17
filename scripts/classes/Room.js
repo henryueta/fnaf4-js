@@ -144,14 +144,20 @@ class Room {
     }
 
     onChangeDarkAmbience(opacity){
+
         if(this.vision === 'external' && !this.isLockedAction){
-            this.dark_screen.style.opacity = opacity
+            this.dark_screen.style.opacity = opacity;
             return
         }
-        this.dark_screen.style.opacity = '0%'
+        this.dark_screen.style.opacity = '0%';
     }
 
     onFlashLight(){
+
+        if(this.isLockedAction){
+            return
+        }
+
         this.onChangeDarkAmbience('0%');
            if(this.vision === 'external'
             && 
@@ -276,7 +282,11 @@ class Room {
             : 
             object_type === 'closet'
             ? this.closet
-            : null
+            : 
+            object_type === 'hideout'
+            ? this.hideout
+            :
+            null
         );
 
         if(this.current_object_vision.actions === null){

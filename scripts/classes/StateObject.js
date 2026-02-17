@@ -13,6 +13,12 @@ class StateObject extends Furniture{
     }
 
     onChangeAnimatronicState(state,onAction){   
+
+
+        if(state > this.animatronic_final_state){
+            return
+        }
+
         this.current_animatronic_state = state;
         if(!!onAction){
             return onAction();

@@ -135,7 +135,9 @@ class Game {
                             ? true
                             : current_state_object[state_object_field]
                         );
-                        console.log("animatronic procurando");
+                        // clearTimeout(this.night_event_interval);
+                        // this.night_event_interval = null;
+                        console.log("animatronic " + current_state_object.animatronic_identifier + " procurando. . .");
 
                         current_state_object.player_waiting_timeout =setTimeout(()=>{    
                             console.log("fim da destruição do estado");
@@ -147,13 +149,14 @@ class Game {
                             );
 
                             current_state_object.onChangeAnimatronicState(0);
+                            console.log("LIMPAR ESTADO: ",current_state_object.animatronic_identifier)
                             this.killer_animatronic = null;
                             this.player_room.isLockedAction = false;
+                            current_state_object.player_waiting_timeout = null;
                         },current_state_object.player_waiting_value);
                         return
                         
                     }
-                    
                     if(!current_state_object[state_object_field]){
                         this.player_room.isLockedAction = true;
                         console.log("morto por tipo:",animatronic.current_mode)
@@ -169,24 +172,49 @@ class Game {
                 if(
                     current_state_object.state_change_timeout === null 
                 ){
-                    console.log("lançando nova mudança de estado")
-                    current_state_object.state_change_timeout = setTimeout(()=>{
-                        console.log("event",current_state_object.current_animatronic_state < current_state_object.animatronic_final_state)
-                         if(current_state_object.current_animatronic_state < current_state_object.animatronic_final_state){
-
-                            current_state_object.onChangeAnimatronicState(current_state_object.current_animatronic_state+=1);
-                            this.onUpdatePlayerVision(animatronic);
-                            current_state_object.state_change_timeout = null;
-                            console.log("fim da mudança de estado",current_state_object.current_animatronic_state)
-                            if(current_state_object.current_animatronic_state === current_state_object.animatronic_final_state){
-                                this.killer_animatronic = animatronic.identifier;
-                                return
-                            }
-                            return
-                        }
-
-                    },current_state_object.state_timer_value)
+                    console.log("lançando nova mudança de estado para :",current_state_object.animatronic_identifier+" ,pois killer = "+this.killer_animatronic)
                     
+                    // if(current_state_object.animatronic_final_state === 1){
+                    if(current_state_object.animatronic_identifier === 2
+                        &&
+                        this.player_room.mirror.current_animatronic_state > 0
+                    ){
+                        console.log("Esperar Mirror")
+                        return
+                    }
+
+                    if(current_state_object.animatronic_identifier === 1
+                        &&
+                        this.player_room.closet.current_animatronic_state === 1
+                    ){
+                        console.log("Esperar Closet")
+                        return
+                    }
+                        
+
+                    // }
+                        current_state_object.state_change_timeout = setTimeout(()=>{
+                                if(current_state_object.current_animatronic_state < current_state_object.animatronic_final_state){
+                                
+                                    current_state_object.onChangeAnimatronicState(current_state_object.current_animatronic_state+=1);
+
+                                    this.onUpdatePlayerVision(animatronic);
+                                    current_state_object.state_change_timeout = null;
+                                    console.log("fim da mudança de estado de "+current_state_object.animatronic_identifier,current_state_object.current_animatronic_state)
+                                }    
+                                if(
+                                    current_state_object.current_animatronic_state === current_state_object.animatronic_final_state
+                                    &&
+                                    this.killer_animatronic === null
+                                ){
+                                    this.killer_animatronic = animatronic.identifier;
+                                    return
+                                }
+                                return
+
+                        },current_state_object.state_timer_value)
+                    
+
                     return
                 }
                 return
@@ -294,8 +322,8 @@ class Game {
     
     onStartNightEvent(){
         this.night_event_interval = setInterval(()=>{
-            // this.onActiveAnimatronic(this.animatronic_list[0]);
-            // this.onActiveAnimatronic(this.animatronic_list[1]);
+            this.onActiveAnimatronic(this.animatronic_list[0]);
+            this.onActiveAnimatronic(this.animatronic_list[1]);
             this.onActiveAnimatronic(this.animatronic_list[2]);
         },this.current_night.event_running_interval);
     }
@@ -325,6 +353,15 @@ class Game {
                     "hideout"
                 ),this.player_room.hideout.vision_image,"external",'entrace',this.player_room.direction)
                 this.player_room.hideout.onClick();
+                return
+            }
+
+            if(
+                this.player_room.closet.current_animatronic_state === this.player_room.closet.animatronic_final_state
+            ){
+                clearTimeout(this.player_room.closet.player_waiting_timeout);
+                this.player_room.closet.onListen(false);
+                this.onKillPlayer(this.animatronic_list[this.player_room.closet.animatronic_identifier]);
                 return
             }
 

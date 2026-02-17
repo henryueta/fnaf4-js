@@ -18,11 +18,11 @@ const mirror_list = [
             },
             {
                 state:2,
-                image:"../teste2.jpeg"
+                image:"../testeHall.jpeg"
             }
         ],
         animatronic_final_state:2,
-        state_timer_value:4500,
+        state_timer_value:5000,
         player_waiting_value:5000
     }
 ]
