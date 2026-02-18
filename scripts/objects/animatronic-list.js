@@ -2,7 +2,7 @@ import { Animatronic } from "../classes/Animatronic.js";
 
 const animatronic_list = [
     new Animatronic({
-    current_place:7,
+    current_place:6,
     identifier:0,
     isActive:true,
     isMoving:true,

@@ -21,87 +21,27 @@ class Room {
         this.flashlight_number_clicks = 0;
         this.direction = null;
         this.onLockVision = config.onLockVision;
+
         this.closet = config.closet;
         this.closet.furniture_room_context = this.room_context;
         this.closet.onRectClick = (image,direction,type)=>this.onSwitchVision("closet",image,"external",type,direction);
-        this.hideout = new Hideout({
-            furniture_room_context:this.room_context,
-            x:config.hideout.x,
-            y:config.hideout.y,
-            type:config.hideout.type,
-            width:config.hideout.width,
-            height:config.hideout.height,
-            animatronic_identifier:config.hideout.animatronic_identifier,
-            animatronic_view_list:config.hideout.animatronic_view_list,
-            vision_image:config.hideout.animatronic_view_list.find((animatronic_view)=>animatronic_view.state === 0).image,
-            onRectClick: (image,direction,type)=>{
-                this.onSwitchVision("hideout",image,"external",type,direction);
-            }
-        })
-        this.mirror = new Mirror({
-            furniture_room_context:this.room_context,
-            x:config.mirror.x,
-            y:config.mirror.y,
-            type:config.mirror.type,
-            width:config.mirror.width,
-            height:config.mirror.height,
-            animatronic_identifier:config.mirror.animatronic_identifier,
-            animatronic_view_list:config.mirror.animatronic_view_list,
-            vision_image:config.mirror.animatronic_view_list.find((animatronic_view)=>animatronic_view.state === 0).image,
-            final_animatronic_state:config.mirror.final_animatronic_state,
-            state_timer_value:config.mirror.state_timer_value,
-            waiting_process_value:config.mirror.waiting_process_value,
-            player_waiting_value: config.mirror.player_waiting_value,
-            onRectClick: (image,direction,type)=>{
-                this.onSwitchVision("mirror",image,"external",type,direction);
-            }
-        })
-        this.front_door = new Door({
-            furniture_room_context:this.room_context,
-            x:config.front_door.x,
-            y:config.front_door.y,
-            type:config.front_door.type,
-            width: config.front_door.width, 
-            height: config.front_door.height,
-            place_location_number:config.front_door.place_location_number,
-            animatronic_view_list:config.front_door.animatronic_view_list,
-            vision_image:config.front_door.animatronic_view_list.find((animatronic_view)=>animatronic_view.identifier === null).image,
-            onRectClick: (image,direction,type)=>{
-                this.onSwitchVision("door",image,"external",type,direction);
-            }
-        });
-        // this.right_door = new Door({
-        //     door_room_context:this.room_context,
-        //     x:config.right_door.x,
-        //     y:config.right_door.y,
-        //     type:config.right_door.type,
-        //     width: config.right_door.width, 
-        //     height: config.right_door.height,
-        //     place_location_number:config.right_door.place_location_number,
-        //     animatronic_view_list:config.right_door.animatronic_view_list,
-        //     vision_image:config.right_door.animatronic_view_list.find((animatronic_view)=>animatronic_view.identifier === null).image,
-        //     onRectClick: (image,direction,type)=>{
-        //         this.onSwitchVision("door",image,"external",type,direction);
-        //     }
-        // });
-        this.window = new Window({
-            door_room_context:this.room_context,
-            x:config.window.x,
-            y:config.window.y,
-            type:config.window.type,
-            width: config.window.width, 
-            height: config.window.height,
-            place_location_number:config.window.place_location_number,
-            animatronic_view_list:config.window.animatronic_view_list,
-            vision_image:config.window.animatronic_view_list.find((animatronic_view)=>animatronic_view.identifier === null).image,
-            onRectClick: (image,direction,type)=>{
-                this.onSwitchVision("door",image,"external",type,direction);
-            }
-        });
 
+        this.hideout = config.hideout;
+        this.hideout.furniture_room_context = this.room_context;
+        this.hideout.onRectClick = (image,direction,type)=>this.onSwitchVision("hideout",image,"external",type,direction);
+        
+        this.mirror = config.mirror;
+        this.mirror.furniture_room_context = this.room_context;
+        this.mirror.onRectClick = (image,direction,type)=>this.onSwitchVision("mirror",image,"external",type,direction);
 
-        // this.clickableRect = { x: 1022, y: 440, width: 450, height: 650 };
-        // this.onRectClick = config.onRectClick || null;
+        this.front_door = config.front_door;
+        this.front_door.furniture_room_context = this.room_context;
+        this.front_door.onRectClick = (image,direction,type)=>this.onSwitchVision("door",image,"external",type,direction);
+
+        this.window = config.window;
+        this.window.furniture_room_context = this.room_context;
+        this.window.onRectClick = (image,direction,type)=>this.onSwitchVision("door",image,"external",type,direction);
+
 
         this.room_canvas.addEventListener('click', (e) => this.handleClick(e));
         this.dark_screen.addEventListener('mousedown',()=> {

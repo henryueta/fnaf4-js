@@ -1,4 +1,4 @@
-import { onRandomNumber } from "../functions/randomNumber.js";
+import { onBetweenChoices, onRandomNumber } from "../functions/randomNumber.js";
 
 class Animatronic {
 
@@ -98,13 +98,12 @@ class Animatronic {
         //0-ficar
         //1-andar
         
-        let random_number = onRandomNumber(0,1);
+        let random_number = onBetweenChoices(50);
 
-        // if(random_number === 0){
-        //     console.log(this.identifier+"escolheu ficar",this.current_place)
-        //     return this.current_place
-        // }
-    
+        if(random_number === 0){
+            console.log(this.identifier+"escolheu ficar",this.current_place)
+            return this.current_place
+        }
 
 
         random_number = onRandomNumber(0,places.length-1)

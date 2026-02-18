@@ -1,3 +1,4 @@
+import { onBetweenChoices } from "../functions/randomNumber.js";
 
 class StateWarning{
 
@@ -13,57 +14,33 @@ class StateWarning{
             this.warning_sound.currentTime = 0;
         })
     }
-
-     onBetweenChoices(percent){
-        const choice = Math.floor(Math.random() * (
-            percent === 50
-            ? (1*2)
-            :
-            percent === 30
-            ? (1*3)
-            : 
-            percent === 25
-            ? (1*4)
-            : 
-            percent === 20
-            ? (1*5)
-            : 
-            percent === 15
-            ? (1*6)
-            : 
-            percent === 10
-            ? (1*10)
-            : 
-            percent === 5
-            ? (1*20)
-            :
-            percent === 1
-            ? (1*100)
-            : 0
-        ));
-        return choice;
-    }
     
     onChoiceWarning(){
-        const isFalseWarning = this.onBetweenChoices(25) === 0;
+        const isFalseWarning = onBetweenChoices(25) === 0;
 
-        
-        if(isFalseWarning || this.false_warning_repeated_times > 2){
-            console.log("FALSO")
-            this.false_warning_repeated_times+=1;
-            return 'none';
-        };
+        if (isFalseWarning) {
+            this.false_warning_repeated_times++;
+
+            if (this.false_warning_repeated_times > 2) {
+                this.false_warning_repeated_times = 0;
+                return
+            } 
+                console.log("FALSO");
+                return 'none';
+        } 
+            
+        this.false_warning_repeated_times = 0;
 
         if(this.false_warning_repeated_times === 2){
             this.false_warning_repeated_times = 0;
         }
     
-        let current_choiced_number = this.onBetweenChoices(50);
+        let current_choiced_number = onBetweenChoices(50);
         
         const chooseAgain = (
             this.last_object_warning === current_choiced_number
             ? 
-            (this.onBetweenChoices(25) !== 0 || this.object_warning_repeated_times === 2)
+            (onBetweenChoices(30) !== 0)
             : false
         );
         

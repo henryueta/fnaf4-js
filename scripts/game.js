@@ -8,9 +8,6 @@ import { door_list } from "./objects/door-list.js"
 import { mirror_list } from "./objects/mirror-list.js"
 import { hideout_list } from "./objects/hideout-list.js"
 import { closet_list } from "./objects/closet-list.js"
-import { StateWarning } from "./classes/StateWarning.js"
-
-const teste = new StateWarning();
 
 const game = new Game({
     player_room: new Room({

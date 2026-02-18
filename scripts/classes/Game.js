@@ -194,14 +194,18 @@ class Game {
                     this.state_warning.warning_sound.play();
 
                     current_state_object.waiting_process_timeout = setTimeout(()=>{
+
                         this.onPreventDeath(animatronic,current_state_object);
                         current_state_object.waiting_process_timeout = null;
-                    },current_state_object.waiting_process_value);
+
+                    },current_state_object.waiting_process_value+(
+                        this.state_warning.last_object_warning === 1
+                        ? 1000
+                        : 0
+                    ));
 
                     return
                 }
-
-
 
                 if(
                     current_state_object.state_change_timeout === null 
@@ -274,6 +278,12 @@ class Game {
             this.killer_animatronic !== null
             &&
             this.killer_animatronic !== animatronic.identifier
+            &&
+            (
+                animatronic.current_mode === 'hunter'
+                &&
+                animatronic.current_place === 10
+            )
         ){
             
             console.log(animatronic.current_mode,"not action");
@@ -305,7 +315,7 @@ class Game {
                     console.log("current",current_animatronic_door)
                 
                     if(current_animatronic_door === undefined || current_animatronic_door === null){
-                         animatronic.current_place = 7;
+                         animatronic.current_place = 6;
                          animatronic.onResetVisitedPlaceList();
                         return
                     }
@@ -374,8 +384,8 @@ class Game {
                 console.log("ROUND: ",this.current_state_object_round)
             }
             // this.onActiveAnimatronic(this.animatronic_list[0]);
-            this.onActiveAnimatronic(this.animatronic_list[1]);
-            this.onActiveAnimatronic(this.animatronic_list[2]);
+            // this.onActiveAnimatronic(this.animatronic_list[1]);
+            // this.onActiveAnimatronic(this.animatronic_list[2]);
         },this.current_night.event_running_interval);
     }
 
@@ -434,7 +444,7 @@ class Game {
             this.player_room.onSwitchVision((
                 this.player_room.current_object_vision.type
             ),"../bedroom_1.jpeg","internal",'exit',this.player_room.direction);
-            return
+            return  
         })
     }
 

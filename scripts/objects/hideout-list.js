@@ -1,11 +1,12 @@
+import { Hideout } from "../classes/Hideout.js"
 
 const hideout_list = [
-    {
+    new Hideout({
         x:1000,
         y:170,
-        width: 220, 
-        height: 450,
         type:'',
+        width:220,
+        height:450,
         animatronic_identifier:1,
         animatronic_view_list:[
             {
@@ -20,8 +21,9 @@ const hideout_list = [
                 state:2,
                 image:"../teste2.jpeg"
             }
-        ]
-    }
+        ],
+        vision_image:"../vinheta.jpeg",
+    })
 ]
 
 export {
