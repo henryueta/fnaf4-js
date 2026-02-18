@@ -5,7 +5,7 @@ class StateObject extends Furniture{
     constructor(config){
         super(config);
         this.current_animatronic_state = 0;
-        this.animatronic_final_state = config.animatronic_final_state;
+        this.final_animatronic_state = config.final_animatronic_state;
         this.animatronicIsSearching = false;
         this.waiting_process_timeout = null;
         this.waiting_process_value = config.waiting_process_value;
@@ -27,7 +27,7 @@ class StateObject extends Furniture{
     onChangeAnimatronicState(state,onAction){   
 
 
-        if(state > this.animatronic_final_state){
+        if(state > this.final_animatronic_state){
             return
         }
 

@@ -48,7 +48,7 @@ class Room {
             animatronic_identifier:config.mirror.animatronic_identifier,
             animatronic_view_list:config.mirror.animatronic_view_list,
             vision_image:config.mirror.animatronic_view_list.find((animatronic_view)=>animatronic_view.state === 0).image,
-            animatronic_final_state:config.mirror.animatronic_final_state,
+            final_animatronic_state:config.mirror.final_animatronic_state,
             state_timer_value:config.mirror.state_timer_value,
             waiting_process_value:config.mirror.waiting_process_value,
             player_waiting_value: config.mirror.player_waiting_value,

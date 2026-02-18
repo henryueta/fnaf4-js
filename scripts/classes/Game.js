@@ -167,9 +167,17 @@ class Game {
                     throw new Error("Objeto de mudança de estado inválido");
                 }
 
-                if(this.current_state_object_round === 'none'){
+                if(
+                    this.current_state_object_round === 'none'
+                    &&
+                    (
+                        this.player_room.mirror.current_animatronic_state > 0
+                    )
+                ){
                     console.log("se prepare fake");
                     this.state_warning.warning_sound.play(); 
+                    this.current_state_object_round = null;
+                    return
                 }
 
                 if(
@@ -199,7 +207,7 @@ class Game {
                     current_state_object.state_change_timeout === null 
                 ){
                     
-                    // if(current_state_object.animatronic_final_state === 1){
+                    // if(current_state_object.final_animatronic_state === 1){
                     if(current_state_object.animatronic_identifier === 2
                         &&
                         this.player_room.mirror.current_animatronic_state > 0
@@ -218,7 +226,7 @@ class Game {
                         
 
                     if(
-                        current_state_object.current_animatronic_state === (current_state_object.animatronic_final_state-1)
+                        current_state_object.current_animatronic_state === (current_state_object.final_animatronic_state-1)
                         &&
                         this.current_state_object_round !== animatronic.current_mode
                     ){
@@ -226,9 +234,9 @@ class Game {
                     }
                     console.log("lançando nova mudança de estado para :",current_state_object.animatronic_identifier+" ,pois killer = "+this.killer_animatronic)
                         current_state_object.state_change_timeout = setTimeout(()=>{
-                                if(current_state_object.current_animatronic_state < current_state_object.animatronic_final_state){
+                                if(current_state_object.current_animatronic_state < current_state_object.final_animatronic_state){
                                     
-                                    !!(current_state_object.current_animatronic_state < (current_state_object.animatronic_final_state-1))
+                                    !!(current_state_object.current_animatronic_state < (current_state_object.final_animatronic_state-1))
                                     ? (()=>{
                                         current_state_object.onChangeAnimatronicState(current_state_object.current_animatronic_state+=1);
                                         this.onUpdatePlayerVision(animatronic);
@@ -243,7 +251,7 @@ class Game {
                                     console.log("fim da mudança de estado de "+current_state_object.animatronic_identifier,current_state_object.current_animatronic_state)
                                 }    
                                 if(
-                                    current_state_object.current_animatronic_state === current_state_object.animatronic_final_state
+                                    current_state_object.current_animatronic_state === current_state_object.final_animatronic_state
                                     &&
                                     this.killer_animatronic === null
                                 ){
@@ -366,8 +374,8 @@ class Game {
                 console.log("ROUND: ",this.current_state_object_round)
             }
             // this.onActiveAnimatronic(this.animatronic_list[0]);
-            // this.onActiveAnimatronic(this.animatronic_list[1]);
-            // this.onActiveAnimatronic(this.animatronic_list[2]);
+            this.onActiveAnimatronic(this.animatronic_list[1]);
+            this.onActiveAnimatronic(this.animatronic_list[2]);
         },this.current_night.event_running_interval);
     }
 

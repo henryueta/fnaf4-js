@@ -22,7 +22,7 @@ class Closet extends StateObject{
     }
 
     onListenAudio(){
-        // if(this.current_animatronic_state !== this.animatronic_final_state){
+        // if(this.current_animatronic_state !== this.final_animatronic_state){
         //     console.log(null)
         //     return
         // }

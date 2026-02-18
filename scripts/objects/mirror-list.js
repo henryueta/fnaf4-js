@@ -21,7 +21,7 @@ const mirror_list = [
                 image:"../testeHall.jpeg"
             }
         ],
-        animatronic_final_state:2,
+        final_animatronic_state:2,
         state_timer_value:5000,
         player_waiting_value:5000,
         waiting_process_value:5000
