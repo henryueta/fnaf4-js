@@ -7,7 +7,11 @@ class StateWarning{
         this.object_warning_repeated_times = 0;
         this.last_false_warning = null;
         this.false_warning_repeated_times = 0;
-
+        this.warning_sound = new Audio();
+        this.warning_sound.src = "../assets/audio/wood_hit.mp3";
+        this.warning_sound.addEventListener('ended',()=>{
+            this.warning_sound.currentTime = 0;
+        })
     }
 
      onBetweenChoices(percent){
@@ -47,7 +51,7 @@ class StateWarning{
         if(isFalseWarning || this.false_warning_repeated_times > 2){
             console.log("FALSO")
             this.false_warning_repeated_times+=1;
-            return null;
+            return 'none';
         };
 
         if(this.false_warning_repeated_times === 2){

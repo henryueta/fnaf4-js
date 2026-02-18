@@ -12,6 +12,7 @@ class Game {
         this.jumpscare = null;
         this.state_warning = new StateWarning();
         this.place_list = config.place_list;
+        this.current_state_object_round = null;
         this.current_night = config.current_night;
         this.night_event_interval = null;
     }
@@ -61,9 +62,14 @@ class Game {
     }
 
     onKillPlayer(animatronic){
-
+        this.player_room.isLockedAction = true;
         animatronic.isMoving = false;
         animatronic.inJumpscareProcess = true;
+
+        if(this.current_state_object_round === animatronic.current_mode){
+            this.current_state_object_round = null;
+        }
+
         if(this.night_event_interval !== null){
             clearInterval(this.night_event_interval);
         }
@@ -122,7 +128,7 @@ class Game {
                
                 current_state_object.onChangeAnimatronicState(0);
                 console.log("LIMPAR ESTADO: ",current_state_object.animatronic_identifier);
-
+                this.current_state_object_round = null;
                 this.killer_animatronic = null;
                 this.player_room.isLockedAction = false;
                 current_state_object.player_waiting_timeout = null;
@@ -141,15 +147,11 @@ class Game {
     }
 
     onChangeState(animatronic){
-            
-            const current_state_warning = this.state_warning.onChoiceWarning();
 
             if(
                 animatronic.current_mode === 'mirror'
                 ||
                 animatronic.current_mode === 'closet'
-                ||
-                !current_state_warning
             ){
                 
                 const current_state_object = (
@@ -165,7 +167,14 @@ class Game {
                     throw new Error("Objeto de mudança de estado inválido");
                 }
 
+                if(this.current_state_object_round === 'none'){
+                    console.log("se prepare fake");
+                    this.state_warning.warning_sound.play(); 
+                }
+
                 if(
+                    this.current_state_object_round === animatronic.current_mode
+                    &&
                     this.killer_animatronic === animatronic.identifier
                     &&
                     !current_state_object.animatronicIsSearching
@@ -174,6 +183,7 @@ class Game {
                     current_state_object.onChangeAnimatronicState(current_state_object.current_animatronic_state);
                     this.onUpdatePlayerVision(animatronic);
                     console.log("Se prepare");
+                    this.state_warning.warning_sound.play();
 
                     current_state_object.waiting_process_timeout = setTimeout(()=>{
                         this.onPreventDeath(animatronic,current_state_object);
@@ -183,10 +193,11 @@ class Game {
                     return
                 }
 
+
+
                 if(
                     current_state_object.state_change_timeout === null 
                 ){
-                    console.log("lançando nova mudança de estado para :",current_state_object.animatronic_identifier+" ,pois killer = "+this.killer_animatronic)
                     
                     // if(current_state_object.animatronic_final_state === 1){
                     if(current_state_object.animatronic_identifier === 2
@@ -206,17 +217,26 @@ class Game {
                     }
                         
 
-                    // }
+                    if(
+                        current_state_object.current_animatronic_state === (current_state_object.animatronic_final_state-1)
+                        &&
+                        this.current_state_object_round !== animatronic.current_mode
+                    ){
+                        return
+                    }
+                    console.log("lançando nova mudança de estado para :",current_state_object.animatronic_identifier+" ,pois killer = "+this.killer_animatronic)
                         current_state_object.state_change_timeout = setTimeout(()=>{
                                 if(current_state_object.current_animatronic_state < current_state_object.animatronic_final_state){
                                     
-                                    !!(current_state_object.current_animatronic_state !== (current_state_object.animatronic_final_state-1))
+                                    !!(current_state_object.current_animatronic_state < (current_state_object.animatronic_final_state-1))
                                     ? (()=>{
                                         current_state_object.onChangeAnimatronicState(current_state_object.current_animatronic_state+=1);
                                         this.onUpdatePlayerVision(animatronic);
                                     })()
                                     : (()=>{
-                                        current_state_object.current_animatronic_state+=1;
+                                        // if(this.current_state_object_round === animatronic.current_mode){
+                                            current_state_object.current_animatronic_state+=1;
+                                        // }
                                     })();
                                     
                                     current_state_object.state_change_timeout = null;
@@ -341,6 +361,10 @@ class Game {
     
     onStartNightEvent(){
         this.night_event_interval = setInterval(()=>{
+            if(this.current_state_object_round === null || this.current_state_object_round === 'none'){
+                this.current_state_object_round = this.state_warning.onChoiceWarning();
+                console.log("ROUND: ",this.current_state_object_round)
+            }
             // this.onActiveAnimatronic(this.animatronic_list[0]);
             // this.onActiveAnimatronic(this.animatronic_list[1]);
             // this.onActiveAnimatronic(this.animatronic_list[2]);
