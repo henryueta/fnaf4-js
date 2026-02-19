@@ -110,6 +110,9 @@ class Room {
             ){
                 this.onFlashlightCheckout();
                 this.flashlight_number_clicks+=1;
+
+                this.front_hall.onStopWalkAudio();
+
                if(this.flashlight_number_clicks === 10){
                     this.current_object_vision.actions.onRemoveAnimatronicView();
                     this.front_hall.current_animatronic = null;

@@ -312,9 +312,8 @@ class Game {
             // if(animatronic.current_place === 11){
             // }
 
-            const prev_current_animatronic_place = this.place_list.find((place_item)=>place_item.number === animatronic.current_place)
-
-              if(!!prev_current_animatronic_place.hasSecurityRoomConnection && this.player_room.front_door.atackIsCancelled !== null)
+            const prev_current_animatronic_place = this.place_list.find((place_item)=>place_item.number === animatronic.current_place);
+              if(!!prev_current_animatronic_place.isForFlashlight && this.player_room.front_door.atackIsCancelled === true)
                {
 
                     console.log("entrou aqui");
@@ -332,6 +331,7 @@ class Game {
                     ){
                          animatronic.current_place = animatronic.initial_place;
                          animatronic.onResetVisitedPlaceList();
+                         this.player_room.front_door.atackIsCancelled = null;
                         return
                     }
                }
@@ -340,16 +340,23 @@ class Game {
             //apenas o número do local
             
             const current_animatronic_place =  animatronic.onChoicePlace(this.place_list.find((place_item)=>place_item.number === animatronic.current_place).next_place_index_list);
+            const next_current_animatronic_place = this.place_list.find((place_item)=>place_item.number === current_animatronic_place)
             
-               if(current_animatronic_place === this.player_room.front_hall.number){
+               if(
+                current_animatronic_place === this.player_room.front_hall.number 
+                &&
+                next_current_animatronic_place.number !== prev_current_animatronic_place.number
+               ){
+                    this.player_room.front_hall.onPlayWalkAudio(0.4);
                     this.player_room.front_hall.current_animatronic = animatronic.identifier;
                     this.player_room.front_hall.isWaitingPlayer = true;
                     this.player_room.front_door.vision_image = this.player_room.front_hall.animatronic_view_image;
-
+                    
                     if(this.player_room.current_object_vision.type === 'door'
                         &&
                         this.player_room.vision === 'external'
                     ){
+                        this.place_list.room_image.src = this.player_room.front_door.vision_image;
                         this.player_room.onLoadImage();
                     }
 
@@ -374,8 +381,21 @@ class Game {
 
             }
 
-            const next_current_animatronic_place = this.place_list.find((place_item)=>place_item.number === current_animatronic_place)
-               
+             
+            const next_current_animatronic_place_hall = this.place_list.find((place_item)=>
+                place_item.number === next_current_animatronic_place.next_place_index_list[0]
+            );
+            console.log(next_current_animatronic_place.number , current_animatronic_place)
+            if(
+                !!next_current_animatronic_place_hall
+                &&
+                !!next_current_animatronic_place_hall.isForFlashlight
+                &&
+                next_current_animatronic_place.number !== prev_current_animatronic_place.number
+            ){
+                this.player_room.front_hall.onPlayWalkAudio(0.05);
+            }
+
             if(next_current_animatronic_place.hasSecurityRoomConnection){
 
                     const current_player_room_entrace = [
@@ -388,7 +408,7 @@ class Game {
                     console.log("Porta encontrada: ",current_player_room_entrace);
                     current_player_room_entrace.onSetAnimatronicView(animatronic.identifier);
 
-                }
+            }
 
             if(animatronic.current_mode === 'hunter'){
                 if(!!next_current_animatronic_place.hasMultipleConnections && !!prev_current_animatronic_place.hasMultipleConnections){
@@ -416,7 +436,7 @@ class Game {
                 this.current_state_object_round = this.state_warning.onChoiceWarning();
                 console.log("ROUND: ",this.current_state_object_round)
             }
-            this.onActiveAnimatronic(this.animatronic_list[0]);
+            // this.onActiveAnimatronic(this.animatronic_list[0]);
             // this.onActiveAnimatronic(this.animatronic_list[1]);
             // this.onActiveAnimatronic(this.animatronic_list[2]);
             // this.onActiveAnimatronic(this.animatronic_list[3]);

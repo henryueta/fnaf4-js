@@ -2,8 +2,8 @@ import { Animatronic } from "../classes/Animatronic.js";
 
 const animatronic_list = [
     new Animatronic({
-    current_place:6,
-    initial_place:6,
+    current_place:5,
+    initial_place:5,
     identifier:0,
     isActive:true,
     isMoving:true,

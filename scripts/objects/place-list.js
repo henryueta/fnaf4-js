@@ -16,7 +16,7 @@ const place_list = [
                 image:"../bedroom_1.jpeg"
             },
             {//alterar depois
-                animatronic_list:[3],
+                animatronic_list:[0],
                 noisy_animatronic:null,
                 audio:"../assets/audio/beep_2.mp3",
                 repeat_audio:false,
@@ -24,7 +24,7 @@ const place_list = [
             }
         ],
         name:"test2_room",
-        next_place_index_list:[9],
+        next_place_index_list:[6],
         animatronic_list:animatronic_list.filter((animatronic_item)=>animatronic_item.current_place === 0)
         }),
        new Place({
