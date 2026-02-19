@@ -30,7 +30,7 @@ class Room {
         this.mirror.furniture_room_context = this.room_context;
         this.mirror.onRectClick = (image,direction,type)=>this.onSwitchVision("mirror",image,"external",type,direction);
 
-        this.front_hall = config.front_hall;
+        this.right_hall = config.right_hall;
 
         this.front_door = config.front_door;
         this.front_door.furniture_room_context = this.room_context;
@@ -97,7 +97,7 @@ class Room {
         if(this.isLockedAction){
             return
         }
-        console.log(this.front_hall.current_animatronic,this.front_hall.current_animatronic !== null)
+        console.log(this.right_hall.current_animatronic,this.right_hall.current_animatronic !== null)
         this.onChangeDarkAmbience('0%');
            if(this.vision === 'external'
             && 
@@ -105,17 +105,17 @@ class Room {
             && (
                 this.current_object_vision.actions.current_animatronic !== null
                 ||
-                this.front_hall.current_animatronic !== null
+                this.right_hall.current_animatronic !== null
             )
             ){
                 this.onFlashlightCheckout();
                 this.flashlight_number_clicks+=1;
 
-                this.front_hall.onStopWalkAudio();
+                this.right_hall.onStopWalkAudio();
 
                if(this.flashlight_number_clicks === 10){
                     this.current_object_vision.actions.onRemoveAnimatronicView();
-                    this.front_hall.current_animatronic = null;
+                    this.right_hall.current_animatronic = null;
                     this.front_door.atackIsCancelled = true;
                     this.room_image.src = this.current_object_vision.actions.vision_image;
                     this.onLoadImage();

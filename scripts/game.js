@@ -15,7 +15,7 @@ const game = new Game({
         room_canvas:document.querySelector("#room-canvas"),
         room_image:"../bedroom_1.jpeg",
         front_door:door_list[0],
-        front_hall:hall_list[0],
+        right_hall:hall_list[0],
         window:door_list[1],
         // right_door:door_list[2],
         mirror:mirror_list[0],

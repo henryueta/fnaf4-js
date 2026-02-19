@@ -180,7 +180,7 @@ class Game {
                     )
                 ){
                     console.log("se prepare fake");
-                    this.state_warning.warning_sound.play(); 
+                    this.state_warning.warning_audio.play(); 
                     this.current_state_object_round = null;
                     return
                 }
@@ -196,7 +196,7 @@ class Game {
                     current_state_object.onChangeAnimatronicState(current_state_object.current_animatronic_state);
                     this.onUpdatePlayerVision(animatronic);
                     console.log("Se prepare");
-                    this.state_warning.warning_sound.play();
+                    this.state_warning.warning_audio.play();
 
                     current_state_object.waiting_process_timeout = setTimeout(()=>{
 
@@ -343,14 +343,14 @@ class Game {
             const next_current_animatronic_place = this.place_list.find((place_item)=>place_item.number === current_animatronic_place)
             
                if(
-                current_animatronic_place === this.player_room.front_hall.number 
+                current_animatronic_place === this.player_room.right_hall.number 
                 &&
                 next_current_animatronic_place.number !== prev_current_animatronic_place.number
                ){
-                    this.player_room.front_hall.onPlayWalkAudio(0.4);
-                    this.player_room.front_hall.current_animatronic = animatronic.identifier;
-                    this.player_room.front_hall.isWaitingPlayer = true;
-                    this.player_room.front_door.vision_image = this.player_room.front_hall.animatronic_view_image;
+                    this.player_room.right_hall.onPlayWalkAudio(0.4);
+                    this.player_room.right_hall.current_animatronic = animatronic.identifier;
+                    this.player_room.right_hall.isWaitingPlayer = true;
+                    this.player_room.front_door.vision_image = this.player_room.right_hall.animatronic_view_image;
                     
                     if(this.player_room.current_object_vision.type === 'door'
                         &&
@@ -363,7 +363,7 @@ class Game {
                }
 
                if(current_animatronic_place === this.player_room.front_door.number){
-                    this.player_room.front_hall.isWaitingPlayer = false;
+                    this.player_room.right_hall.isWaitingPlayer = false;
                }
 
             if(current_animatronic_place === 11){
@@ -393,7 +393,7 @@ class Game {
                 &&
                 next_current_animatronic_place.number !== prev_current_animatronic_place.number
             ){
-                this.player_room.front_hall.onPlayWalkAudio(0.05);
+                this.player_room.right_hall.onPlayWalkAudio(0.1);
             }
 
             if(next_current_animatronic_place.hasSecurityRoomConnection){
@@ -436,7 +436,7 @@ class Game {
                 this.current_state_object_round = this.state_warning.onChoiceWarning();
                 console.log("ROUND: ",this.current_state_object_round)
             }
-            // this.onActiveAnimatronic(this.animatronic_list[0]);
+            this.onActiveAnimatronic(this.animatronic_list[0]);
             // this.onActiveAnimatronic(this.animatronic_list[1]);
             // this.onActiveAnimatronic(this.animatronic_list[2]);
             // this.onActiveAnimatronic(this.animatronic_list[3]);
@@ -446,7 +446,7 @@ class Game {
 
     onCheckoutUseOfFlashlight(){
         if(
-            !this.player_room.front_hall.isWaitingPlayer 
+            !this.player_room.right_hall.isWaitingPlayer 
             && 
             (this.player_room.current_object_vision.actions.current_animatronic !== null
             &&

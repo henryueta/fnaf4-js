@@ -8,10 +8,10 @@ class StateWarning{
         this.object_warning_repeated_times = 0;
         this.last_false_warning = null;
         this.false_warning_repeated_times = 0;
-        this.warning_sound = new Audio();
-        this.warning_sound.src = "../assets/audio/wood_hit.mp3";
-        this.warning_sound.addEventListener('ended',()=>{
-            this.warning_sound.currentTime = 0;
+        this.warning_audio = new Audio();
+        this.warning_audio.src = "../assets/audio/wood_hit.mp3";
+        this.warning_audio.addEventListener('ended',()=>{
+            this.warning_audio.currentTime = 0;
         })
     }
     
