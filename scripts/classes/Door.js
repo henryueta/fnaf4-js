@@ -4,8 +4,10 @@ class Door extends Furniture{
 
     constructor(config){
         super(config);
+        this.number = config.number;
         this.place_location_number = config.place_location_number;
         this.current_animatronic = null;
+        this.atackIsCancelled = null;
     }
     
     onFindAnimatronicView(identifier){

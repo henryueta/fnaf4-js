@@ -10,6 +10,7 @@ class Place {
         this.animatronic_list =  config.animatronic_list ||  [];
         this.place_view_list = config.place_view_list || [];
         this.hasMultipleConnections = config.hasMultipleConnections;
+        this.isForFlashlight = config.isForFlashlight;
         this.hasSecurityRoomConnection = config.hasSecurityRoomConnection;
         const current_place_info =  this.place_view_list.find((view_item)=>
         {

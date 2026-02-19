@@ -51,7 +51,7 @@ class Movement{
                     } else{
                         this.left_container.style.display = (this.x_value.toFixed() == 0 ? 'none' : 'block')
                         this.right_container.style.display = (this.x_value.toFixed() == -9 ? 'none' : 'block')
-                        clearInterval(this.x_move_interval)
+                        clearInterval(this.x_move_interval);
                     }
                     this.onChangeXVision();
             }, 30);

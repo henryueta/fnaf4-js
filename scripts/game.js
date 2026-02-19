@@ -8,12 +8,14 @@ import { door_list } from "./objects/door-list.js"
 import { mirror_list } from "./objects/mirror-list.js"
 import { hideout_list } from "./objects/hideout-list.js"
 import { closet_list } from "./objects/closet-list.js"
+import { hall_list } from "./objects/hall-list.js"
 
 const game = new Game({
     player_room: new Room({
         room_canvas:document.querySelector("#room-canvas"),
         room_image:"../bedroom_1.jpeg",
         front_door:door_list[0],
+        front_hall:hall_list[0],
         window:door_list[1],
         // right_door:door_list[2],
         mirror:mirror_list[0],

@@ -5,6 +5,7 @@ class Animatronic {
     constructor(config){
         this.identifier = config.identifier;
         this.current_place = config.current_place;
+        this.initial_place = config.initial_place;
         this.action_list = config.action_list;
         this.isActive = config.isActive;
         this.isMoving = config.isMoving;
@@ -98,7 +99,7 @@ class Animatronic {
         //0-ficar
         //1-andar
         
-        let random_number = onBetweenChoices(50);
+        let random_number = onBetweenChoices(20);
 
         if(random_number === 0){
             console.log(this.identifier+"escolheu ficar",this.current_place)

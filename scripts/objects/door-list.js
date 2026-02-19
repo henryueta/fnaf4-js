@@ -1,8 +1,10 @@
 import { Door } from "../classes/Door.js"
+import { Hall } from "../classes/Hall.js"
 import { Window } from "../classes/Window.js"
 
 const door_list = [
     new Door({
+            number:10,
             x:721,
             y:210,
             type:'center',
@@ -22,6 +24,10 @@ const door_list = [
                 image:"../vinheta.jpeg",
             }],
             vision_image:"../vinheta.jpeg",
+            hall_conection:new Hall({
+                number:7,
+                animatronic_view_image:"../teste_limite_2.jpeg"
+            })
     }),
     new Window({
             x:0,
@@ -31,7 +37,7 @@ const door_list = [
             height: 340,
             place_location_number:9,
             animatronic_view_list:[{
-                identifier:0,
+                identifier:3,
                 audio:"../assets/audio/beep_1.mp3",
                 repeat_audio:false,
                 image:"../teste4.jpeg",

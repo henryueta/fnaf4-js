@@ -1,7 +1,3 @@
-import { Door } from "./Door.js";
-import { Hideout } from "./Hideout.js";
-import { Mirror } from "./Mirror.js";
-import { Window } from "./Window.js";
 
 class Room {
     constructor(config) {
@@ -34,6 +30,8 @@ class Room {
         this.mirror.furniture_room_context = this.room_context;
         this.mirror.onRectClick = (image,direction,type)=>this.onSwitchVision("mirror",image,"external",type,direction);
 
+        this.front_hall = config.front_hall;
+
         this.front_door = config.front_door;
         this.front_door.furniture_room_context = this.room_context;
         this.front_door.onRectClick = (image,direction,type)=>this.onSwitchVision("door",image,"external",type,direction);
@@ -42,16 +40,17 @@ class Room {
         this.window.furniture_room_context = this.room_context;
         this.window.onRectClick = (image,direction,type)=>this.onSwitchVision("door",image,"external",type,direction);
 
+        this.onFlashlightCheckout = this.onFlashlightCheckout;
 
         this.room_canvas.addEventListener('click', (e) => this.handleClick(e));
         this.dark_screen.addEventListener('mousedown',()=> {
-            this.onFlashLight();
+            this.onFlashlight();
         })
         this.dark_screen.addEventListener('mouseup',()=> {
            this.onChangeDarkAmbience('100%');
         })
         this.dark_screen.addEventListener('touchstart',()=> {
-            this.onFlashLight();
+            this.onFlashlight();
         })
         this.dark_screen.addEventListener('touchend',()=> {
            this.onChangeDarkAmbience('100%');
@@ -93,24 +92,32 @@ class Room {
         this.dark_screen.style.opacity = '0%';
     }
 
-    onFlashLight(){
+    onFlashlight(){
 
         if(this.isLockedAction){
             return
         }
-
+        console.log(this.front_hall.current_animatronic,this.front_hall.current_animatronic !== null)
         this.onChangeDarkAmbience('0%');
            if(this.vision === 'external'
             && 
             this.current_object_vision.type === 'door'
-            && this.current_object_vision.actions.current_animatronic !== null
-        ){
+            && (
+                this.current_object_vision.actions.current_animatronic !== null
+                ||
+                this.front_hall.current_animatronic !== null
+            )
+            ){
+                this.onFlashlightCheckout();
                 this.flashlight_number_clicks+=1;
                if(this.flashlight_number_clicks === 10){
-                this.current_object_vision.actions.onRemoveAnimatronicView();
-                this.room_image.src = this.current_object_vision.actions.vision_image;
-                this.onLoadImage();
-                this.flashlight_number_clicks = 0;
+                    this.current_object_vision.actions.onRemoveAnimatronicView();
+                    this.front_hall.current_animatronic = null;
+                    this.front_door.atackIsCancelled = true;
+                    this.room_image.src = this.current_object_vision.actions.vision_image;
+                    this.onLoadImage();
+                    this.flashlight_number_clicks = 0;
+                    return
                }
            }
     }
@@ -155,12 +162,10 @@ class Room {
 
     onEntraceContainerVision(type,direction){
         this.room_canvas.classList.add('room-'+type+'-'+direction+'-vision');
-        
     }
 
     onExitContainerVision(type,direction){
         this.room_canvas.classList.remove('room-'+type+'-'+direction+'-vision');
-        
     }
 
     onSwitchVision(object_type,room_image,vision,type,direction){
@@ -227,7 +232,9 @@ class Room {
             object_type === 'hideout'
             ? this.hideout
             :
-            null
+            object_type === 'door'
+            ? this.front_door
+            : null
         );
 
         if(this.current_object_vision.actions === null){

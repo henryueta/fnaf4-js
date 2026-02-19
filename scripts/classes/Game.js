@@ -70,6 +70,10 @@ class Game {
             this.current_state_object_round = null;
         }
 
+        if(this.killer_animatronic === null){
+            this.killer_animatronic = animatronic.identifier;
+        }
+
         if(this.night_event_interval !== null){
             clearInterval(this.night_event_interval);
         }
@@ -82,6 +86,7 @@ class Game {
             scream_audio:animatronic.jumpscare_scream_audio
         })
         this.x_moviment.setIsLocked(true,true);
+        console.log(this.x_moviment.isLocked)
         this.jumpscare.onStart();
         this.player_room.onChangeDarkAmbience('0%');
         this.toggle_bed_buttonn.style.display = 'none';
@@ -215,23 +220,27 @@ class Game {
                     if(current_state_object.animatronic_identifier === 2
                         &&
                         this.player_room.mirror.current_animatronic_state > 0
+                        &&
+                        this.current_state_object_round !== animatronic.current_mode
                     ){
-                        console.log("Esperar Mirror")
+                        console.log("Esperar Mirror");
                         return
                     }
 
                     if(current_state_object.animatronic_identifier === 1
                         &&
                         this.player_room.closet.current_animatronic_state === 1
+                        &&
+                        this.current_state_object_round !== animatronic.current_mode
                     ){
-                        console.log("Esperar Closet")
+                        console.log("Esperar Closet");
                         return
                     }
                         
 
                     if(
-                        current_state_object.current_animatronic_state === (current_state_object.final_animatronic_state-1)
-                        &&
+                        // current_state_object.current_animatronic_state === (current_state_object.final_animatronic_state-1)
+                        // &&
                         this.current_state_object_round !== animatronic.current_mode
                     ){
                         return
@@ -305,7 +314,7 @@ class Game {
 
             const prev_current_animatronic_place = this.place_list.find((place_item)=>place_item.number === animatronic.current_place)
 
-              if(!!prev_current_animatronic_place.hasSecurityRoomConnection)
+              if(!!prev_current_animatronic_place.hasSecurityRoomConnection && this.player_room.front_door.atackIsCancelled !== null)
                {
 
                     console.log("entrou aqui");
@@ -314,8 +323,14 @@ class Game {
                     
                     console.log("current",current_animatronic_door)
                 
-                    if(current_animatronic_door === undefined || current_animatronic_door === null){
-                         animatronic.current_place = 6;
+                    if(
+                        current_animatronic_door === undefined 
+                        || 
+                        current_animatronic_door === null 
+                        || 
+                        this.player_room.current_animatronic === null
+                    ){
+                         animatronic.current_place = animatronic.initial_place;
                          animatronic.onResetVisitedPlaceList();
                         return
                     }
@@ -326,10 +341,28 @@ class Game {
             
             const current_animatronic_place =  animatronic.onChoicePlace(this.place_list.find((place_item)=>place_item.number === animatronic.current_place).next_place_index_list);
             
+               if(current_animatronic_place === this.player_room.front_hall.number){
+                    this.player_room.front_hall.current_animatronic = animatronic.identifier;
+                    this.player_room.front_hall.isWaitingPlayer = true;
+                    this.player_room.front_door.vision_image = this.player_room.front_hall.animatronic_view_image;
+
+                    if(this.player_room.current_object_vision.type === 'door'
+                        &&
+                        this.player_room.vision === 'external'
+                    ){
+                        this.player_room.onLoadImage();
+                    }
+
+               }
+
+               if(current_animatronic_place === this.player_room.front_door.number){
+                    this.player_room.front_hall.isWaitingPlayer = false;
+               }
+
             if(current_animatronic_place === 11){
                 this.player_room.isLockedAction = true;
                 this.killer_animatronic = animatronic.identifier;
-                this.toggle_bed_buttonn.onclick = ()=>{}
+                this.toggle_bed_buttonn.onclick = ()=>{};
                 this.onKillPlayer(animatronic);
                 
                 // if(this.player_room.vision === 'external'){
@@ -342,8 +375,8 @@ class Game {
             }
 
             const next_current_animatronic_place = this.place_list.find((place_item)=>place_item.number === current_animatronic_place)
-
-                if(next_current_animatronic_place.hasSecurityRoomConnection){
+               
+            if(next_current_animatronic_place.hasSecurityRoomConnection){
 
                     const current_player_room_entrace = [
                         this.player_room.front_door,
@@ -383,18 +416,40 @@ class Game {
                 this.current_state_object_round = this.state_warning.onChoiceWarning();
                 console.log("ROUND: ",this.current_state_object_round)
             }
-            // this.onActiveAnimatronic(this.animatronic_list[0]);
+            this.onActiveAnimatronic(this.animatronic_list[0]);
             // this.onActiveAnimatronic(this.animatronic_list[1]);
             // this.onActiveAnimatronic(this.animatronic_list[2]);
+            // this.onActiveAnimatronic(this.animatronic_list[3]);
+
         },this.current_night.event_running_interval);
+    }
+
+    onCheckoutUseOfFlashlight(){
+        if(
+            !this.player_room.front_hall.isWaitingPlayer 
+            && 
+            (this.player_room.current_object_vision.actions.current_animatronic !== null
+            &&
+            this.player_room.current_object_vision.actions.current_animatronic !== undefined
+            )
+            &&
+            this.player_room.current_object_vision.actions.current_animatronic.identifier === this.animatronic_list[0].identifier
+        ){
+            this.onKillPlayer(this.animatronic_list[0]);
+            return;
+        }   
     }
 
     onStart(){
 
+        this.player_room.onFlashlightCheckout = ()=>{
+            this.onCheckoutUseOfFlashlight();
+        }
+
         this.player_room.onDraw();
         this.player_room.onLockVision = (vision)=>{
             this.x_moviment.setIsLocked(!!(
-                vision === 'external'
+                (vision === 'external' || this.jumpscare !== null)
             ),true)
         }
 
@@ -406,6 +461,8 @@ class Game {
         // })
 
         this.toggle_bed_buttonn.addEventListener('click',()=>{
+
+            this.onCheckoutUseOfFlashlight();
 
             if(this.player_room.vision === 'internal'){
                 this.x_moviment.onEndMove();
