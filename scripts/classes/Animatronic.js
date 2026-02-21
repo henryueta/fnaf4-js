@@ -95,13 +95,13 @@ class Animatronic {
 
     }
 
-    onChoicePlace(places){
+    onChoicePlace(places,canStay){
         //0-ficar
         //1-andar
         
-        let random_number = onBetweenChoices(20);
+        let random_number = onBetweenChoices(30);
 
-        if(random_number === 0){
+        if(random_number === 0 && !!canStay){
             console.log(this.identifier+"escolheu ficar",this.current_place)
             return this.current_place
         }

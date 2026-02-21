@@ -1,3 +1,4 @@
+import { onBetweenChoices, onRandomNumber } from "../functions/randomNumber.js";
 import { Jumpscare } from "./Jumpscare.js";
 import { StateWarning } from "./StateWarning.js";
 
@@ -318,25 +319,38 @@ class Game {
                 : this.player_room.window
             ); 
 
-            const current_animatronic_place =  (
-                current_animatronic_entrace.atackIsCancelled !== false
-                ?
-                animatronic.onChoicePlace(this.place_list.find((place_item)=>place_item.number === animatronic.current_place).next_place_index_list)
-                :
-                null
-            );
-            const next_current_animatronic_place = this.place_list.find((place_item)=>place_item.number === current_animatronic_place)
-            const prev_current_animatronic_place = this.place_list.find((place_item)=>place_item.number === animatronic.current_place);
-            // const current_animatronic_hall = [this.player_room.right_hall,this.player_room.left_hall].find((hall)=>
-            //     hall.number === current_animatronic_place
-            // );
-            
             const current_animatronic_hall = 
             (
                 animatronic.identifier === 0
                 ? this.player_room.right_hall
                 : this.player_room.left_hall
             );
+
+            if(current_animatronic_hall.isWaitingPlayer){
+                    console.log("esperando")
+                setTimeout(()=>{
+                    console.log("fim da espera");
+                    current_animatronic_hall.isWaitingPlayer = false;
+                },current_animatronic_hall.waiting_player_value)
+
+                return
+            }
+
+            const current_animatronic_place =  (
+                current_animatronic_entrace.atackIsCancelled !== false
+                ?
+                animatronic.onChoicePlace(this.place_list.find((place_item)=>place_item.number === animatronic.current_place).next_place_index_list,current_animatronic_hall.isWaitingPlayer)
+                :
+                null
+            );
+
+            const next_current_animatronic_place = this.place_list.find((place_item)=>place_item.number === current_animatronic_place)
+            const prev_current_animatronic_place = this.place_list.find((place_item)=>place_item.number === animatronic.current_place);
+            // const current_animatronic_hall = [this.player_room.right_hall,this.player_room.left_hall].find((hall)=>
+            //     hall.number === current_animatronic_place
+            // );
+            
+        
             if(
                 // !!prev_current_animatronic_place
                 // &&
@@ -469,10 +483,27 @@ class Game {
                 this.current_state_object_round = this.state_warning.onChoiceWarning();
                 console.log("ROUND: ",this.current_state_object_round)
             }
-            this.onActiveAnimatronic(this.animatronic_list[0]);
+            setTimeout(()=>{
+
+                if(onBetweenChoices(50) === 0){
+                    this.onActiveAnimatronic(this.animatronic_list[
+                        (
+                            onBetweenChoices(50) === 0
+                            ? 0
+                            : 3
+                        )
+                    ])    
+                    return
+                }
+
+                this.onActiveAnimatronic(this.animatronic_list[0]);
+                this.onActiveAnimatronic(this.animatronic_list[3]);
+                return
+            },onRandomNumber(5000,15000))
+            
+
             this.onActiveAnimatronic(this.animatronic_list[1]);
             this.onActiveAnimatronic(this.animatronic_list[2]);
-            this.onActiveAnimatronic(this.animatronic_list[3]);
 
         },this.current_night.event_running_interval);
     }
@@ -509,8 +540,8 @@ class Game {
             ),true)
         }
 
-        this.onStartNightEvent();   
-        this.x_moviment.onMove();
+        // this.onStartNightEvent();   
+        this.x_moviment.onMove();   
 
         // this.toggle_bed_buttonn.addEventListener('mousemove',()=>{
            
@@ -537,6 +568,7 @@ class Game {
             ){
                 this.player_room.closet.clearTimeoutEvents();
                 this.player_room.closet.onListen(false);
+                console.log("Parou de vigiar")
                 this.onKillPlayer(this.animatronic_list[this.player_room.closet.animatronic_identifier]);
                 return
             }
@@ -549,7 +581,7 @@ class Game {
                     this.player_room.closet.clearTimeoutEvents();
                     this.player_room.mirror.player_waiting_timeout = null;
                 }
-
+                console.log("saiu do esconderijo")
                 this.onKillPlayer(this.animatronic_list[this.player_room.mirror.animatronic_identifier]);
                 return
             }
