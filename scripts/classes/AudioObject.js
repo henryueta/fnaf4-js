@@ -10,7 +10,7 @@ class AudioObject {
         this.gain_node.connect(this.context.destination);
 
         this.panner = this.context.createStereoPanner();
-        this.panner.pan.value = config.pan_value; // centro
+        this.panner.pan.value = config.pan_value;
 
         this.gain_node.connect(this.panner);
         this.panner.connect(this.context.destination);
@@ -33,7 +33,7 @@ class AudioObject {
         this.source.buffer = this.buffer;
         // this.source.connect(this.context.destination);
         this.source.connect(this.gain_node);
-        this.source.connect(this.gain_node);
+        // this.source.connect(this.gain_node);
         this.start_time = this.context.currentTime - this.pause_time;
         this.source.start();
         //0, this.pause_time

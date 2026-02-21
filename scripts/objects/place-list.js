@@ -3,6 +3,81 @@ import { animatronic_list } from "./animatronic-list.js"
 
 const place_list = [
         new Place({
+        number:2,
+        hasMultipleConnections:true,
+        isForFlashlight:false,
+        hasSecurityRoomConnection:false,
+        place_view_list:[
+            {
+                animatronic_list:[],
+                noisy_animatronic:null,
+                audio:"../assets/audio/beep_1.mp3",
+                repeat_audio:false,
+                image:"../bedroom_1.jpeg"
+            },
+            {//alterar depois
+                animatronic_list:[3],
+                noisy_animatronic:null,
+                audio:"../assets/audio/beep_2.mp3",
+                repeat_audio:false,
+                image:"../assets/imgs/one.avif"
+            }
+        ],
+        name:"test2_room",
+        next_place_index_list:[3],
+        animatronic_list:animatronic_list.filter((animatronic_item)=>animatronic_item.current_place === 0)
+        }),
+        new Place({
+        number:3,
+        hasMultipleConnections:true,
+        isForFlashlight:false,
+        hasSecurityRoomConnection:false,
+        place_view_list:[
+            {
+                animatronic_list:[],
+                noisy_animatronic:null,
+                audio:"../assets/audio/beep_1.mp3",
+                repeat_audio:false,
+                image:"../bedroom_1.jpeg"
+            },
+            {//alterar depois
+                animatronic_list:[3],
+                noisy_animatronic:null,
+                audio:"../assets/audio/beep_2.mp3",
+                repeat_audio:false,
+                image:"../assets/imgs/one.avif"
+            }
+        ],
+        name:"test2_room",
+        next_place_index_list:[4],
+        animatronic_list:animatronic_list.filter((animatronic_item)=>animatronic_item.current_place === 0)
+        }),
+        new Place({
+        number:4,
+        hasMultipleConnections:true,
+        isForFlashlight:true,
+        hasSecurityRoomConnection:false,
+        place_view_list:[
+            {
+                animatronic_list:[],
+                noisy_animatronic:null,
+                audio:"../assets/audio/beep_1.mp3",
+                repeat_audio:false,
+                image:"../bedroom_1.jpeg"
+            },
+            {//alterar depois
+                animatronic_list:[3],
+                noisy_animatronic:null,
+                audio:"../assets/audio/beep_2.mp3",
+                repeat_audio:false,
+                image:"../assets/imgs/one.avif"
+            }
+        ],
+        name:"test2_room",
+        next_place_index_list:[9],
+        animatronic_list:animatronic_list.filter((animatronic_item)=>animatronic_item.current_place === 0)
+        }),
+        new Place({
         number:5,
         hasMultipleConnections:true,
         isForFlashlight:false,

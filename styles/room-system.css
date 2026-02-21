@@ -104,22 +104,22 @@
 }
 
 .room-canvas-container.room-entrace-bottom-vision{
-    animation:room-entrace-vision 0.2s ease-in-out ;
+    animation:room-entrace-vision 0.5s ease-in-out ;
     transform-origin: bottom center; 
 }
 
 .room-canvas-container.room-entrace-center-vision{
-     animation:room-entrace-vision 0.2s ease-in-out ;
+     animation:room-entrace-vision 0.5s ease-in-out ;
      transform-origin: calc(50% + 170px) center; 
 }
 
 .room-canvas-container.room-entrace-left-vision{
-    animation:room-entrace-vision 0.2s ease-in-out ;
+    animation:room-entrace-vision 0.5s ease-in-out ;
     transform-origin: 2px 30% 10px; 
 }
 
 .room-canvas-container.room-entrace-right-vision{
-    animation:room-entrace-vision 0.2s ease-in-out ;
+    animation:room-entrace-vision 0.5s ease-in-out ;
     transform-origin: right center; 
 }
 
@@ -135,23 +135,23 @@
 }
 
 .room-canvas-container.room-exit-bottom-vision{
-     animation:room-exit-vision 0.2s ease-in-out ;
+     animation:room-exit-vision 0.5s ease-in-out ;
      transform-origin: center bottom; 
 }
 
 
 .room-canvas-container.room-exit-center-vision{
-     animation:room-exit-vision 0.2s ease-in-out ;
+     animation:room-exit-vision 0.5s ease-in-out ;
      transform-origin: calc(50% + 170px) center; 
 }
 
 .room-canvas-container.room-exit-left-vision{
-    animation:room-exit-vision 0.2s ease-in-out ;
+    animation:room-exit-vision 0.5s ease-in-out ;
     transform-origin: 2px 30% 10px; 
 }
 
 .room-canvas-container.room-exit-right-vision{
-    animation:room-exit-vision 0.2s ease-in-out ;
+    animation:room-exit-vision 0.5s ease-in-out ;
     transform-origin: right center; 
 }
 

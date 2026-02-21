@@ -311,62 +311,95 @@ class Game {
 
             // if(animatronic.current_place === 11){
             // }
+            const current_animatronic_entrace = 
+            (
+                animatronic.identifier === 0
+                ? this.player_room.front_door
+                : this.player_room.window
+            ); 
 
+            const current_animatronic_place =  (
+                current_animatronic_entrace.atackIsCancelled !== false
+                ?
+                animatronic.onChoicePlace(this.place_list.find((place_item)=>place_item.number === animatronic.current_place).next_place_index_list)
+                :
+                null
+            );
+            const next_current_animatronic_place = this.place_list.find((place_item)=>place_item.number === current_animatronic_place)
             const prev_current_animatronic_place = this.place_list.find((place_item)=>place_item.number === animatronic.current_place);
-              if(!!prev_current_animatronic_place.isForFlashlight && this.player_room.front_door.atackIsCancelled === true)
+            // const current_animatronic_hall = [this.player_room.right_hall,this.player_room.left_hall].find((hall)=>
+            //     hall.number === current_animatronic_place
+            // );
+            
+            const current_animatronic_hall = 
+            (
+                animatronic.identifier === 0
+                ? this.player_room.right_hall
+                : this.player_room.left_hall
+            );
+            if(
+                // !!prev_current_animatronic_place
+                // &&
+                // !!prev_current_animatronic_place.isForFlashlight 
+                // && 
+                !!current_animatronic_entrace
+                &&
+                current_animatronic_entrace.atackIsCancelled === true)
                {
 
                     console.log("entrou aqui");
 
-                    const current_animatronic_door = this.player_room.onFindAnimatronic(animatronic.identifier);
+                    const new_animatronic_entrace = this.player_room.onFindAnimatronic(animatronic.identifier);
                     
-                    console.log("current",current_animatronic_door)
+                    console.log("current",new_animatronic_entrace)
                 
                     if(
-                        current_animatronic_door === undefined 
+                        new_animatronic_entrace === undefined 
                         || 
-                        current_animatronic_door === null 
+                        new_animatronic_entrace === null 
                         || 
                         this.player_room.current_animatronic === null
                     ){
                          animatronic.current_place = animatronic.initial_place;
                          animatronic.onResetVisitedPlaceList();
-                         this.player_room.front_door.atackIsCancelled = null;
+                         current_animatronic_entrace.atackIsCancelled = null;
                         return
                     }
                }
-
-            
             //apenas o número do local
-            
-            const current_animatronic_place =  animatronic.onChoicePlace(this.place_list.find((place_item)=>place_item.number === animatronic.current_place).next_place_index_list);
-            const next_current_animatronic_place = this.place_list.find((place_item)=>place_item.number === current_animatronic_place)
-            
                if(
-                current_animatronic_place === this.player_room.right_hall.number 
-                &&
-                next_current_animatronic_place.number !== prev_current_animatronic_place.number
+                current_animatronic_place === current_animatronic_hall.number
+
+                // next_current_animatronic_place.number !== prev_current_animatronic_place.number
                ){
-                    this.player_room.right_hall.onPlayWalkAudio(0.4);
-                    this.player_room.right_hall.current_animatronic = animatronic.identifier;
-                    this.player_room.right_hall.isWaitingPlayer = true;
-                    this.player_room.front_door.vision_image = this.player_room.right_hall.animatronic_view_image;
+                    current_animatronic_hall.onPlayWalkAudio(0.4);
+                    current_animatronic_hall.current_animatronic = animatronic.identifier;
+                    current_animatronic_hall.isWaitingPlayer = true;
+                    current_animatronic_hall.wasVisited = true;
+                    console.log(current_animatronic_entrace)
+                    current_animatronic_entrace.vision_image = current_animatronic_hall.animatronic_view_image;
                     
-                    if(this.player_room.current_object_vision.type === 'door'
+                    if(!!(this.player_room.current_object_vision.type === 'door' 
+                        ||
+                        this.player_room.current_object_vision.type === 'window'
+                    )
                         &&
                         this.player_room.vision === 'external'
                     ){
-                        this.place_list.room_image.src = this.player_room.front_door.vision_image;
+                        this.player_room.room_image.src = current_animatronic_entrace.vision_image;
                         this.player_room.onLoadImage();
                     }
 
                }
 
-               if(current_animatronic_place === this.player_room.front_door.number){
-                    this.player_room.right_hall.isWaitingPlayer = false;
+               if(
+                !!current_animatronic_entrace
+                &&
+                current_animatronic_place === current_animatronic_entrace.number){
+                    current_animatronic_hall.isWaitingPlayer = false;
                }
 
-            if(current_animatronic_place === 11){
+            if(current_animatronic_place === 11 && current_animatronic_entrace.atackIsCancelled !== true){
                 this.player_room.isLockedAction = true;
                 this.killer_animatronic = animatronic.identifier;
                 this.toggle_bed_buttonn.onclick = ()=>{};
@@ -385,15 +418,15 @@ class Game {
             const next_current_animatronic_place_hall = this.place_list.find((place_item)=>
                 place_item.number === next_current_animatronic_place.next_place_index_list[0]
             );
-            console.log(next_current_animatronic_place.number , current_animatronic_place)
+            console.log(next_current_animatronic_place.number , prev_current_animatronic_place.number)
             if(
                 !!next_current_animatronic_place_hall
                 &&
                 !!next_current_animatronic_place_hall.isForFlashlight
-                &&
-                next_current_animatronic_place.number !== prev_current_animatronic_place.number
+                // &&
+                // next_current_animatronic_place.number !== prev_current_animatronic_place.number
             ){
-                this.player_room.right_hall.onPlayWalkAudio(0.1);
+                current_animatronic_hall.onPlayWalkAudio(0.05);
             }
 
             if(next_current_animatronic_place.hasSecurityRoomConnection){
@@ -407,7 +440,7 @@ class Game {
 
                     console.log("Porta encontrada: ",current_player_room_entrace);
                     current_player_room_entrace.onSetAnimatronicView(animatronic.identifier);
-
+                    
             }
 
             if(animatronic.current_mode === 'hunter'){
@@ -437,16 +470,18 @@ class Game {
                 console.log("ROUND: ",this.current_state_object_round)
             }
             this.onActiveAnimatronic(this.animatronic_list[0]);
-            // this.onActiveAnimatronic(this.animatronic_list[1]);
-            // this.onActiveAnimatronic(this.animatronic_list[2]);
-            // this.onActiveAnimatronic(this.animatronic_list[3]);
+            this.onActiveAnimatronic(this.animatronic_list[1]);
+            this.onActiveAnimatronic(this.animatronic_list[2]);
+            this.onActiveAnimatronic(this.animatronic_list[3]);
 
         },this.current_night.event_running_interval);
     }
 
-    onCheckoutUseOfFlashlight(){
+    onCheckoutUseOfFlashlight(hall_type){
         if(
-            !this.player_room.right_hall.isWaitingPlayer 
+            !hall_type.isWaitingPlayer 
+            &&
+            !!this.player_room.current_object_vision.actions
             && 
             (this.player_room.current_object_vision.actions.current_animatronic !== null
             &&
@@ -462,9 +497,10 @@ class Game {
 
     onStart(){
 
-        this.player_room.onFlashlightCheckout = ()=>{
-            this.onCheckoutUseOfFlashlight();
+        this.player_room.onFlashlightCheckout = (type)=>{
+            this.onCheckoutUseOfFlashlight(type);
         }
+
 
         this.player_room.onDraw();
         this.player_room.onLockVision = (vision)=>{
@@ -482,7 +518,7 @@ class Game {
 
         this.toggle_bed_buttonn.addEventListener('click',()=>{
 
-            this.onCheckoutUseOfFlashlight();
+            this.onCheckoutUseOfFlashlight(this.player_room.current_object_vision.actions);
 
             if(this.player_room.vision === 'internal'){
                 this.x_moviment.onEndMove();

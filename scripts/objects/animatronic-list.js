@@ -48,8 +48,8 @@ const animatronic_list = [
     ]    
     }),
     new Animatronic({
-    current_place:5,
-    initial_place:5,
+    current_place:2,
+    initial_place:2,
     identifier:3,
     isActive:true,
     isMoving:true,

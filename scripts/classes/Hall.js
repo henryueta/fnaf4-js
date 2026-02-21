@@ -4,18 +4,19 @@ class Hall extends AudioObject{
 
     constructor(config){
         super({
-            audio:"../assets/audio/walking_in_hall.mp3",
+            audio:config.audio,
             volume:0.05,
-            pan_value:1
+            pan_value:config.pan_value
         })
         this.number = config.number;
         this.current_animatronic = null;
         this.animatronic_view_image = config.animatronic_view_image;
         this.isWaitingPlayer = false;
+        this.wasVisited = false;
         this.waiting_player_timeout = null;
         this.waiting_player_value = config.waiting_player_value;
         this.walking_audio = new Audio();       
-        this.walking_audio.src = "../assets/audio/walking_in_hall.mp3";
+        this.walking_audio.src = config.audio;
         this.walkingAudioIsPlaying = false;
         this.walking_audio.addEventListener("ended",()=>{
             this.walkingAudioIsPlaying = true;

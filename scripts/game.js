@@ -9,6 +9,8 @@ import { mirror_list } from "./objects/mirror-list.js"
 import { hideout_list } from "./objects/hideout-list.js"
 import { closet_list } from "./objects/closet-list.js"
 import { hall_list } from "./objects/hall-list.js"
+import { window_list } from "./objects/window-list.js"
+
 
 const game = new Game({
     player_room: new Room({
@@ -16,7 +18,8 @@ const game = new Game({
         room_image:"../bedroom_1.jpeg",
         front_door:door_list[0],
         right_hall:hall_list[0],
-        window:door_list[1],
+        left_hall:hall_list[1],
+        window:window_list[0],
         // right_door:door_list[2],
         mirror:mirror_list[0],
         hideout:hideout_list[0],

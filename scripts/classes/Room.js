@@ -31,6 +31,7 @@ class Room {
         this.mirror.onRectClick = (image,direction,type)=>this.onSwitchVision("mirror",image,"external",type,direction);
 
         this.right_hall = config.right_hall;
+        this.left_hall = config.left_hall;
 
         this.front_door = config.front_door;
         this.front_door.furniture_room_context = this.room_context;
@@ -38,9 +39,9 @@ class Room {
 
         this.window = config.window;
         this.window.furniture_room_context = this.room_context;
-        this.window.onRectClick = (image,direction,type)=>this.onSwitchVision("door",image,"external",type,direction);
+        this.window.onRectClick = (image,direction,type)=>this.onSwitchVision("window",image,"external",type,direction);
 
-        this.onFlashlightCheckout = this.onFlashlightCheckout;
+        this.onFlashlightCheckout = ()=>{};
 
         this.room_canvas.addEventListener('click', (e) => this.handleClick(e));
         this.dark_screen.addEventListener('mousedown',()=> {
@@ -97,26 +98,44 @@ class Room {
         if(this.isLockedAction){
             return
         }
-        console.log(this.right_hall.current_animatronic,this.right_hall.current_animatronic !== null)
+
+        const current_hall = (this.current_object_vision.type === 'door' 
+            ? this.right_hall
+            : 
+            this.current_object_vision.type === 'window'
+            ? this.left_hall
+            : null
+        );
+
+        const current_entrace = (this.current_object_vision.type === 'door' 
+            ? this.front_door
+            : 
+            this.current_object_vision.type === 'window'
+            ? this.window
+            : null
+        );
+
         this.onChangeDarkAmbience('0%');
            if(this.vision === 'external'
             && 
-            this.current_object_vision.type === 'door'
+            !!(this.current_object_vision.type === 'door' 
+            ||
+            this.current_object_vision.type === 'window')
             && (
                 this.current_object_vision.actions.current_animatronic !== null
                 ||
-                this.right_hall.current_animatronic !== null
+                current_hall.current_animatronic !== null
             )
             ){
-                this.onFlashlightCheckout();
+                this.onFlashlightCheckout(this.current_object_vision.actions);
                 this.flashlight_number_clicks+=1;
-
-                this.right_hall.onStopWalkAudio();
+                current_hall.onStopWalkAudio();
 
                if(this.flashlight_number_clicks === 10){
                     this.current_object_vision.actions.onRemoveAnimatronicView();
-                    this.right_hall.current_animatronic = null;
-                    this.front_door.atackIsCancelled = true;
+                    current_hall.current_animatronic = null;
+                    current_hall.wasVisited = false;
+                    current_entrace.atackIsCancelled = true;
                     this.room_image.src = this.current_object_vision.actions.vision_image;
                     this.onLoadImage();
                     this.flashlight_number_clicks = 0;
@@ -182,8 +201,8 @@ class Room {
                     this.onEntraceContainerVision(type,direction);
                     setTimeout(()=>{
                         this.onExitContainerVision(type,direction);
-                    },200)
-                },200)
+                    },450)
+                },450)
                 
 
                 if(object_type === 'hideout'){
@@ -204,13 +223,13 @@ class Room {
             setTimeout(()=>{
              this.onExitContainerVision(type,direction);
              this.onSwitchImage(room_image,vision);
-             this.dark_screen.style.display =object_type === 'door' ? 'block' : "none"
-            },200)
+             this.dark_screen.style.display = (object_type === 'door' || object_type === 'window') ? 'block' : "none"
+            },450)
 
             
         }
 
-        if(object_type === 'door'){
+        if(object_type === 'door' || object_type === 'window'){
 
             const current_door_actions = [
                 this.front_door,
@@ -219,7 +238,7 @@ class Room {
             ].find((door)=>door.type === this.direction);
 
             // this.current_door_vision = current_door_actions;
-            this.current_object_vision.type = 'door';
+            this.current_object_vision.type = object_type;
             this.current_object_vision.actions = current_door_actions;
             return
         }
@@ -237,8 +256,12 @@ class Room {
             :
             object_type === 'door'
             ? this.front_door
+            : 
+            object_type === 'window'
+            ? this.window
             : null
         );
+
 
         if(this.current_object_vision.actions === null){
             throw new Error("Ações de objeto de visão inválidas");
